@@ -12,7 +12,7 @@ userbook = [];
 rates = [];
 // routes -------------------------------
 
-// user route
+// user route ==================================================================================
 router.get("/", (req, res) => {
   res.render("index");
 });
@@ -35,7 +35,38 @@ router.get("/home", (req, res) => {
       if (response.data.status["remarks"] === "success") {
         const book = response.data.payload;
         userbook = book;
-        console.log(book);
+        console.log('book',book);
+              // check user booking
+               for(var i = 0; i < book.length; i++){
+
+                //check if the book is either paid or it is stil no expired
+                if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
+                {
+                  var paid_date = new Date(book[i].paid_date);
+                  var date_expiration = new Date(paid_date.getTime() + (30 * 60000));
+                  var now = new Date();
+                  
+                  //update book status if the aloted time overlap to the time givin 
+                  if(now > date_expiration && book[i].date_entry == '0000-00-00 00:00:00')
+                  {
+                    if(book[i].book_status != 'expired' && book[i].paid_date != null){
+                      const data = JSON.stringify({
+                        booking_id: book[i].booking_id,
+                        book_status: 'expired'
+                      });
+
+                      axios
+                      .post("http://localhost/e-parkapi/updateBookingstatus", data)
+                      .then((response) => {
+                            console.log('update to expired success!!!!!!!!!!!!!!!!!');
+                          })
+                          .catch(function (error) {
+                            res.redirect("/user-login");
+                          });
+                      }
+                  }
+                }
+              }
       } else {
          userbook = null;
           res.redirect("/home");
@@ -53,6 +84,7 @@ router.get("/home", (req, res) => {
           if (response.data.status["remarks"] === "success") {
             const slot = response.data.payload;
             sampledata = slot;
+            console.log('slot available today',slot);
           } else {
               sampledata = sampledata;
               res.redirect("/home");
@@ -65,11 +97,11 @@ router.get("/home", (req, res) => {
   axios
       .post("http://localhost/e-parkapi/getRate", sampledata)
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           if (response.data.status["remarks"] === "success") {
             const rate = response.data.payload;
             rates = rate;
-            console.log('aaaaaaaaaaaaaaa',rates);
+            console.log('Rate',rates);
           } else {
               res.redirect("/home");
               console.log(error);
@@ -94,11 +126,12 @@ router.get("/register", (req, res) => {
 });
 
 router.get("/user-profile", (req, res) => {
-  res.render("user-profile");
+  if (!req.session.user) return res.redirect("/user-login");
+  res.render("user-profile",{currentUsers: req.session.user});
 });
 
 
-// admin route
+// admin route ===================================================================================
 router.get("/admin-login", (req, res) => {
   res.render("adminclerk-login", { message: req.session.message });
 });
@@ -113,7 +146,7 @@ router.get("/admin-dashboard", (req, res) => {
 });
 
 router.get("/manage-parking", (req, res) => {
-  console.log('aaaaaaaaaaaaa',req.session.name);
+  // console.log('aaaaaaaaaaaaa',req.session.name);
 
   if (!req.session.user) return res.redirect("/admin-login");
 
@@ -140,22 +173,90 @@ router.get("/settings", (req, res) => {
   res.render("settings");
 });
 
-// clerk route
-// wala yung change pass (sangayon) wala talaga si admin gagawa nun
+// clerk route=================================================================================
 
 router.get("/clerk-profile", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-  res.render("clerk-profile");
+  console.log(req.session.user);
+  res.render("clerk-profile",{currentUsers: req.session.user});
 });
 
 router.get("/manage-booking-clerk", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-  res.render("manage-booking-clerk");
+
+  // All booking
+  axios
+  .post("http://localhost/e-parkapi/getAllBookings", sampledata)
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        const slot = response.data.payload;
+        sampledata = slot;
+        console.log('slot available today',slot);
+      } else {
+          sampledata = sampledata;
+          res.redirect("/home");
+          console.log(error);
+        }
+      }).catch(function (error) {
+      });
+
+  // available today slot
+      axios
+      .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+        .then((response) => {
+          if (response.data.status["remarks"] === "success") {
+            const slot = response.data.payload;
+            userbook = slot;
+            console.log('slot available today',slot);
+          } else {
+              // sampledata = sampledata;
+              res.redirect("/home");
+              console.log(error);
+            }
+          }).catch(function (error) {
+          });
+
+      res.render("manage-booking-clerk",{allbooking:sampledata,slots:userbook});
+
 });
 
 router.get("/manage-parking-clerk", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-  res.render("manage-parking-clerk");
+
+
+  // available today slot
+  axios
+  .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        const slot = response.data.payload;
+        sampledata = slot;
+        console.log('slot available today',slot);
+      } else {
+          sampledata = sampledata;
+          res.redirect("/home");
+          console.log(error);
+        }
+      }).catch(function (error) {
+      });
+
+  // get current rates
+  axios
+  .post("http://localhost/e-parkapi/getRate", sampledata)
+    .then((response) => {
+      // console.log(response);
+      if (response.data.status["remarks"] === "success") {
+        const rate = response.data.payload;
+        rates = rate;
+        console.log('Rate',rates);
+      } else {
+          res.redirect("/home");
+          console.log(error);
+        }
+      }).catch(function (error) {
+      });
+
+  res.render("manage-parking-clerk",{parkings:sampledata,rates:rates});
 });
 
 

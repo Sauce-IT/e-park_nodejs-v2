@@ -51,7 +51,7 @@
         <div class="collapse navbar-collapse" id="topNavBar">
           <form class="d-flex ms-auto my-3 my-lg-0">
             <div class="input-group">
-              <input
+              <!-- <input
                 class="form-control"
                 type="search"
                 placeholder="Search"
@@ -59,7 +59,7 @@
               />
               <button class="btn btn-primary" type="submit">
                 <i class="bi bi-search"></i>
-              </button>
+              </button> -->
             </div>
           </form>
           <ul class="navbar-nav">
@@ -135,38 +135,27 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <div class="modal-body">
-            <form>
-              <div class="mb-3">
-                <label class="form-label" required for="rate">Rate:</label>
-                <select name="rate" id="rate">
-                  <option value="Rate1">Rate1</option>
-                  <option value="Rate2">Rate2</option>
-                  <option value="Rate3">Rate3</option>
-                  <option value="Rate4">Rate4</option>
-                </select>
+          <form  id="rate-form" action="/api/change-rate" method="post">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label" required for="rate">Rate:</label>
+                  <input type="number" name="rate" id="rate" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" required for="rate">Type:</label>
+                  <select name="type" id="type"  class="form-control">
+                    <option value="Fixed">Fixed</option>
+                    <option value="Hourly">Hourly</option>
+                  </select>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label" required for="rate">Type:</label>
-                <select name="type" id="type">
-                  <option value="Type1">Type1</option>
-                  <option value="Type2">Type2</option>
-                  <option value="Type3">Type3</option>
-                  <option value="Type4">Type4</option>
-                </select>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit"class="btn btn-danger"data-bs-dismiss="modal" href="javascript:{}" onclick="document.getElementById('rate-form').submit();">
+                  Cancel
+                </button>
               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -183,18 +172,16 @@
           <div class="col-md-12 mb-3">
             <div class="card">
               <div class="card-header">
-                <span style="font-weight: bold">Rate: </span>
-                20pesos
-                <span style="font-weight: bold">Type: </span>
-                per hour
-                <a
-                  href="#"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#myModal"
-                  >Change</a
-                >
-              </div>
+                <% for(var i = 0; i < rates.length; i++) {%>
+
+                  <span style="font-weight: bold">Rate: </span>
+                  <%= rates[i].rate_price %> pesos
+                  <span style="font-weight: bold">Type: </span>
+                  <%= rates[i].rate_type %>
+                  <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Change</a>
+             
+                <% } %>
+                </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table
@@ -206,114 +193,21 @@
                       <tr>
                         <th>Slot</th>
                         <th>Availability</th>
-                        <th>Action</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
+								      <% for(var i = 0; i < parkings.length; i++) {%>
+
                       <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lorem Ipsum</td>
-                        <td>Lorem Ipsum</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
+                        <td><%= parkings[i].Slot_id %></td>								
+                      	<% if(parkings[i].Availability == 'Maintenance'){ %>
+                          <td>Inactive</td>
+                        <% }else { %>
+                          <td>Active</td>
+                        <% } %>
+                        <td><%= parkings[i].Availability %> </td>
+                        <% } %>
                       </tr>
                     </tbody>
                     <tfoot>

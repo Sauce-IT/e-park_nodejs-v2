@@ -45,7 +45,7 @@
         <div class="collapse navbar-collapse" id="topNavBar">
           <form class="d-flex ms-auto my-3 my-lg-0">
             <div class="input-group">
-              <input
+              <!-- <input
                 class="form-control"
                 type="search"
                 placeholder="Search"
@@ -53,7 +53,7 @@
               />
               <button class="btn btn-primary" type="submit">
                 <i class="bi bi-search"></i>
-              </button>
+              </button> -->
             </div>
           </form>
           <ul class="navbar-nav">
@@ -144,6 +144,7 @@
                   >
                     <thead>
                       <tr>
+                        <th>#</th>
                         <th>Slot</th>
                         <th>Name</th>
                         <th>Mobile</th>
@@ -154,60 +155,77 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Slot 2</td>
-                        <td>Lorem Ipsum</td>
-                        <td>09126508268</td>
-                        <td>ano to</td>
+								      <% for(var i = 0; i < allbooking.length; i++) {%>
+                      <!-- <input value="" hidden> -->
+                        <tr>
+                          <td><%= i + 1 %></td>
+                          <td><%= allbooking[i].slot_id %></td>
+                          <td><%= allbooking[i].user_name %></td>
+                          <td><%= allbooking[i].user_mobile %></td>
+                          <td>
+                              <% if(allbooking[i].book_status == 'paid' && allbooking[i].date_entry == '0000-00-00 00:00:00'){ %>
+                                 <p style="color:blue;"> No entry yet</p>
+                              <% }else if(allbooking[i].book_status == 'unpaid'){ %>
+                                 <p style="color:red;">Cannot enter yet</p>
+                              <% }else if(allbooking[i].book_status == 'expired'){ %>
+                                <p style="color:red;">Didn't Enter</p>
+                              <% }else if(allbooking[i].book_status == 'cancel'){ %>
+                                <p style="color:red;">Cannot Enter</p>
+                              <% }else {%>
+                              <%= allbooking[i].date_entry  %>
+                              <% } %>
+                          </td>
+                          <td>
+                            <% if(allbooking[i].date_exit == '0000-00-00 00:00:00'){ %>
+                             
+                                <p style="color:red;">No Exit</p>
+                          
+                            <% }else { %>
+                              <%= allbooking[i].date_entry %>
+                            <% }%>
+                          </td>
+                          <% if(allbooking[i].book_status == 'paid' && allbooking[i].date_entry == '0000-00-00 00:00:00') {%>
+                            <td>
+                            <a href="#" class="btn btn-warning" style="width: 100px;">Reserved</a>
+                            </td>
+                          <% }%>
+                          <% if( allbooking[i].book_status == 'unpaid') {%>
+                            <td>
+                            <a href="#" class="btn btn-dark" style="width: 100px;">Unpaid</a>
+                            </td>
+                          <% }%>
+                          <% if( allbooking[i].book_status == 'expired') {%>
+                            <td>
+                            <a href="#" class="btn btn-secondary" style="width: 100px;">Expired</a>
+                            </td>
+                          <% }%>
+                          <% if( allbooking[i].book_status == 'cancel') {%>
+                            <td>
+                            <a href="#" class="btn btn-danger">Canceled</a>
+                            </td>
+                          <% }%>
+                          <% if( allbooking[i].book_status == 'exited') {%>
+                            <td>
+                            <a href="#" class="btn btn-success" style="width: 100px;">Done</a>
+                            </td>
+                          <% }%>
+                          <% if( allbooking[i].book_status == 'paid' && allbooking[i].date_entry != '0000-00-00 00:00:00' ) {%>
+                            <td>
+                            <a href="#" class="btn btn-primary">Occupied</a>
+                            </td>
+                          <% }%>
+                          <td>
+                            <% if( allbooking[i].book_status == 'unpaid' ) {%>
+                              <form class="user-form" id="login-form" action="/api/update-paid" method="post">
+                                <input type="number" value="<%= allbooking[i].booking_id  %>" name="booking_id" id="booking_id" hidden>
+                                <button type="submit" class="btn btn-primary" href="javascript:{}" onclick="document.getElementById('login-form').submit();">Paid</button>
+                              </form>
+                            <% }%>
+                          </td>
+                        </tr>
 
-                        <td>Lorem</td>
-                        <td>
-                          <a href="#" class="btn btn-success">Success</a>
-                        </td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Slot 3</td>
-                        <td>Lorem Ipsum</td>
-                        <td>09126508268</td>
-                        <td>huh</td>
+                      <% } %>
 
-                        <td>Lorem</td>
-                        <td>
-                          <a href="#" class="btn btn-danger">Danger</a>
-                        </td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Slot 4</td>
-                        <td>Lorem Ipsum</td>
-                        <td>09126508268</td>
-                        <td>huh</td>
-
-                        <td>Lorem</td>
-                        <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <td>Slot 2</td>
-                      <td>Lorem Ipsum</td>
-                      <td>09126508268</td>
-                      <td>ano to</td>
-
-                      <td>Lorem</td>
-                      <td>
-                        <a href="#" class="btn btn-success">Success</a>
-                      </td>
-                      <td>
-                        <a href="#" class="btn btn-primary">Action</a>
-                      </td>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -227,6 +245,7 @@
           </div>
         </div>
       </div>
+   
     </main>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>

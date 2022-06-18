@@ -76,12 +76,17 @@
 		<div class="text">
 			<h1><span>Looking</span> for <br>car parking reservation</h1>
 			<p>Schedule and organize your reservation.<br> Sign up and book for details.</p>
-			<% if(userbook == null) {%>
+			<% if(userbook == null ) {%>
 				<a href="#" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal" data-bs-target="#myModal4">Reserve now</a>'
 			<% }%>
-		
-			<% for(var i = 0; i < userbook.length; i++) {%>
-					<a href="#" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal" data-bs-target="#myModal2">View Reservation</a>			
+			<% if(userbook != null ) {%>
+				<% for(var i = 0; i < userbook.length; i++) {%>
+					<% if(userbook[i].book_status == 'expired' || userbook[i].book_status == 'exited' ) {%>
+						<a href="#" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal" data-bs-target="#myModal4">Reserve now</a>'
+					<% }else {%>
+						<a href="#" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal" onclick="countdown()" data-bs-target="#myModal2">View Reservation</a>			
+					<% }%>
+				<% }%>
 			<% }%>
 
 			
@@ -127,7 +132,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">Your Reservation</h5>
-						<button type="button" class="btn-close-white" data-bs-dismiss="modal">x</button>
+						<button type="button" class="btn-close-white" data-bs-dismiss="modal" onclick="stopcountdown()">x</button>
 					</div>
 					<div class="modal-body">
 						<!-- <form> -->
@@ -143,6 +148,7 @@
 								<label class="form-label required">Mobile No.</label>
 								<input type="number" value="<%= currentUsers.mobile %>" id="user_mobile" class="form-control" disabled>
 							</div>
+							<% if(userbook != null ) {%>
 							
 								<% for(var i = 0; i < userbook.length; i++) {%>
 
@@ -157,21 +163,33 @@
 									<input value="<%= userbook[i].paid_date %>" name="status" id="status" hidden>
 									<input value="<%= userbook[i].book_status %>" name="book_s" id="book_s" hidden>
 								</div>
-								<% if(userbook[i].book_status == 'paid') { %>
+								<% if(userbook[i].book_status == 'paid' ) { %>
 								
-									<div class="mb-3" >
-										<label class="form-label">Expires before: </label>
-										<h6 id="counter">30:00</h6>					
-									</div>
-									
-									<div class="mb-4" >
-										<label class="form-label">Qr code given by clerk: </label>
-										<div id="qrcode" >
-											<center>
-												<img src="images/thumbnail.png" style="width: 200px; height:200px;">
-											</center>
+									<% if(userbook[i].date_entry != '0000-00-00 00:00:00'){ %>
+										<div class="mb-4" >
+											<label class="form-label">Qr code given by clerk: </label>
+											<div id="qrcode" >
+												<center>
+													<img src="images/thumbnail.png" style="width: 200px; height:200px;">
+												</center>
+											</div>
 										</div>
-									</div>
+									<% }else{ %>
+										<div class="mb-3" >
+											<label class="form-label">Expires before: </label>
+											<h6 id="counter">30:00</h6>					
+										</div>
+										
+										<div class="mb-4" >
+											<label class="form-label">Qr code given by clerk: </label>
+											<div id="qrcode" >
+												<center>
+													<img src="images/thumbnail.png" style="width: 200px; height:200px;">
+												</center>
+											</div>
+										</div>
+									<% } %>
+
 								<% }else{ %>
 									<div class="mb-4" >
 										<label class="form-label">Qr code will appear after payment: </label>
@@ -187,6 +205,8 @@
 									</div>
 								<% }%>
 							<% }%>
+						<% }%>
+
 					</div>
 				</div>
 			</div>
@@ -200,18 +220,20 @@
 						<button type="button" class="btn-close-white" data-bs-dismiss="modal">x</button>
 					</div>
 					<form  id="cancel-form" action="/api/user-cancel-booking" method="post">
-						<% for(var i = 0; i < userbook.length; i++) {%>
+						<% if(userbook != null ) {%>
+							<% for(var i = 0; i < userbook.length; i++) {%>
 
-							<input id="booking_id" name="booking_id" value="<%= userbook[i].booking_id %>" hidden>
-							<div class="modal-footer" >
-								<!-- getReservation function -->
-								<button 
-								href="javascript:{}"
-								onclick="document.getElementById('cancel-form').submit();"
-								class="btn btn-outline-dark btn-md submit-btn" 
-								data-bs-dismiss="modal">Yes</button>
-								<button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-dismiss="modal">No</button>
-							</div>
+								<input id="booking_id" name="booking_id" value="<%= userbook[i].booking_id %>" hidden>
+								<div class="modal-footer" >
+									<!-- getReservation function -->
+									<button 
+									href="javascript:{}"
+									onclick="document.getElementById('cancel-form').submit();"
+									class="btn btn-outline-dark btn-md submit-btn" 
+									data-bs-dismiss="modal">Yes</button>
+									<button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-dismiss="modal">No</button>
+								</div>
+							<% }%>
 						  <% }%>
 					</form>
 				</div>
@@ -468,9 +490,19 @@
 							<a href="#" class="btn btn-success"><%= slots[i].Availability %></a>
 							</td>
 						<% }%>
-						<% if(slots[i].Availability != 'Available') {%>
+						<% if(slots[i].Availability == 'Reserved') {%>
 							<td>
 							<a href="#" class="btn btn-warning"><%= slots[i].Availability %></a>
+							</td>
+						<% }%>
+						<% if(slots[i].Availability == 'Occupied') {%>
+							<td>
+							<a href="#" class="btn btn-primary"><%= slots[i].Availability %></a>
+							</td>
+						<% }%>
+						<% if(slots[i].Availability == 'Maintenance') {%>
+							<td>
+							<a href="#" class="btn btn-danger"><%= slots[i].Availability %></a>
 							</td>
 						<% }%>
 

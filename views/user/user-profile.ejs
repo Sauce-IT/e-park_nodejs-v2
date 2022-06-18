@@ -37,7 +37,7 @@
             <div class="col-sm-4 bg-card rounded-left">
               <div class="card-block text-center text-white">
                 <i class="fas fa-user-tie fa-7x mt-5"></i>
-                <h2 class="font-weight-bold mt-4">Yuri Garcia</h2>
+                <h2 class="font-weight-bold mt-4"><%= currentUsers.name %></h2>
                 <p>User</p>
                 <i class="far fa-edit fa-2x mb-4"></i>
               </div>
@@ -45,63 +45,85 @@
             <div class="col-sm-8 bg-white rounded-right">
               <h3 class="mt-3 text-center">Information</h3>
               <hr class="badge-primary mt-0 w-25" />
-              <div class="row">
-                <div class="col-sm-6">
-                  <p class="font-weight-bold">Email:</p>
-                  <!-- <h6 class="text-muted">yuri@email.com</h6> -->
-                  <input
-                    type="email"
-                    class="text-muted"
-                    value="yuri@email.com"
-                    style="border: none"
-                  />
-                </div>
-                <div class="col-sm-6">
-                  <p class="font-weight-bold">Phone:</p>
-                  <!-- <h6 class="text-muted">0909090923</h6> -->
-                  <input
-                    type="text"
-                    class="text-muted"
-                    value="090909090913"
-                    style="border: none"
-                  />
-                </div>
-              </div>
 
-              <!-- <h4 class="mt-3">Other Details</h4>
-                        <hr class="bg-primary">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <p class="font-weight-bold">Detail1</p>
-                                <h6 class="text-muted">additinanl detail pa dito kunwari</h6>
-                            </div>
-                            <div class="col-sm-6">
-                               <p class="font-weight-bold">Detail2</p>
-                               <h6 class="text-muted">Isa pa dito</h6>
-                           </div>
-                        </div> -->
+              <form id="update-profile" action="/api/update-profile" method="post">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p class="font-weight-bold">Name:</p>
+                    <!-- <h6 class="text-muted">yuri@email.com</h6> -->
+                    <input
+                      type="text"
+                      class="text-muted"
+                      value="<%= currentUsers.name %>"
+                      style="border: none"
+                      name="user_name"
+                    />
+                  </div>
+                  <div class="col-sm-6">
+                    <p class="font-weight-bold">Phone:</p>
+                    <!-- <h6 class="text-muted">0909090923</h6> -->
+                    <input
+                      type="number"
+                      class="text-muted"
+                      value="<%= currentUsers.mobile %>"
+                      style="border: none"
+                      name="user_mobile"
+                    />
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p class="font-weight-bold">Email:</p>
+                    <!-- <h6 class="text-muted">yuri@email.com</h6> -->
+                    <input
+                      type="email"
+                      class="text-muted"
+                      value="<%= currentUsers.email %>"
+                      style="border: none"
+                      name="user_email"
+                    />
+                  </div>
+                  <div class="col-sm-6">
+                    <p class="font-weight-bold">Password:</p>
+                    <!-- sample password lang to -->
+                    <input
+                      type="password"
+                      class="text-muted"
+                      placeholder="***********"
+                      style="border: none"
+                      value=""
+                      name="user_password"
+                    />
+                  </div>
+                </div>
 
-              <hr class="bg-primary" />
-              <ul class="list-unstyled d-flex justify-content-center mt-4">
-                <li>
-                  <a href="#"
-                    ><i class="fab fa-facebook-f px-3 h4 text-info"></i
-                  ></a>
-                </li>
-                <li>
-                  <a href="#"
-                    ><i class="fab fa-youtube px-3 h4 text-info"></i
-                  ></a>
-                </li>
-                <li>
-                  <a href="#"
-                    ><i class="fab fa-twitter px-3 h4 text-info"></i
-                  ></a>
-                </li>
-              </ul>
-              <div class="row" style="text-align: center">
-                <a href="/home" class="btn btn-primary">Save Changes</a>
-              </div>
+            
+                <hr class="bg-primary" />
+                <ul class="list-unstyled d-flex justify-content-center mt-4">
+                  <li>
+                    <a href="#"
+                      ><i class="fab fa-facebook-f px-3 h4 text-info"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#"
+                      ><i class="fab fa-youtube px-3 h4 text-info"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="#"
+                      ><i class="fab fa-twitter px-3 h4 text-info"></i
+                    ></a>
+                  </li>
+                </ul>
+                <div class="row" style="text-align: center">
+                  <button class="btn btn-primary"
+                          type="submit" 
+                          href="javascript:{}"
+                          onclick="document.getElementById('update-profile').submit();">Save Changes</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
