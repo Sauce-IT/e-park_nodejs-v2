@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require("axios").default;
 
 
-// admin login
+// admin login =============================================================================================
 router.post("/admin-login", (req, res) => {
   const loginData = JSON.stringify({
     admin_username: req.body.username,
@@ -30,6 +30,114 @@ router.post("/admin-login", (req, res) => {
       res.redirect("/admin-login");
     });
 });
+
+// update availability
+router.post("/changt-to-inactive", (req, res) => {
+  const loginData = JSON.stringify({
+    slot_id: req.body.slot_id,
+    availability: 'Inactive',
+  });
+  axios
+    .post("http://localhost/e-parkapi/updatePark", loginData)
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        
+        console.log(response.data);
+        res.redirect("/manage-parking");
+      } else {
+        res.redirect("/admin-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/admin-login");
+    });
+});
+
+
+router.post("/changt-to-active", (req, res) => {
+  const loginData = JSON.stringify({
+    slot_id: req.body.slot_id,
+    availability: 'Active',
+  });
+  axios
+    .post("http://localhost/e-parkapi/updatePark", loginData)
+    .then((response) => {
+      console.log(response);
+      if (response.data.status["remarks"] === "success") {
+          res.redirect("/manage-parking");
+      } else {
+        res.redirect("/admin-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/admin-login");
+    });
+});
+
+// add new slot
+router.post("/Add-slot", (req, res) => {
+  axios
+    .post("http://localhost/e-parkapi/add-slot")
+    .then((response) => {
+      console.log(response);
+      if (response.data.status["remarks"] === "success") {
+          res.redirect("/manage-parking");
+      } else {
+        res.redirect("/admin-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/admin-login");
+    });
+});
+
+
+// add employee/ clerk
+router.post("/add-employee", (req, res) => {
+  const loginData = JSON.stringify({
+    admin_name: req.body.admin_name,
+    admin_username: req.body.admin_username,
+    admin_password: req.body.admin_password,
+  });
+  axios
+    .post("http://localhost/e-parkapi/register-admin", loginData)
+    .then((response) => {
+      console.log(response);
+      if (response.data.status["remarks"] === "success") {
+          res.redirect("/user-info");
+      } else {
+        res.redirect("/admin-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/admin-login");
+    });
+});
+
+// edit-employee
+router.post("/edit-employee", (req, res) => {
+  const loginData = JSON.stringify({
+    admin_id: req.body.admin_id,
+    admin_name: req.body.admin_name,
+    admin_username: req.body.admin_username,
+    admin_password: req.body.admin_password,
+  });
+  axios
+    .post("http://localhost/e-parkapi/updateClerk", loginData)
+    .then((response) => {
+      console.log(response);
+      if (response.data.status["remarks"] === "success") {
+          res.redirect("/user-info");
+      } else {
+        res.redirect("/admin-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/admin-login");
+    });
+});
+
+
 //clerk============================================================================================================
 
 // update profile
@@ -104,6 +212,15 @@ router.post("/update-paid", (req, res) => {
       console.log(error);
     });
 });
+
+
+// admin log out
+router.post("/admin-logout", (req, res) => {
+  const data = JSON.stringify({
+    admin_id: req.session.user.id
+  });
+  console.log(data);
+});
 // users===========================================================================================================
 
 //user login
@@ -168,10 +285,7 @@ router.post("/add-reservation", (req, res) => {
         const rate = response.data.payload;
         for(var i = 0; i < rate.length; i++){
            rates = rate[i].rate_price;
-        
-              
           var t = req.body.time;
-
           var total_price = rates * t;
 
 
@@ -179,6 +293,7 @@ router.post("/add-reservation", (req, res) => {
             slot_id: req.body.reserve_slot,
             user_id: req.session.user.id,
             plate: req.body.plate,
+            hrs: req.body.time,
             total_price: total_price
           });
      

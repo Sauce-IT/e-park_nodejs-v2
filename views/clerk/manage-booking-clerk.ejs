@@ -72,7 +72,9 @@
                   <a class="dropdown-item" href="/clerk-profile">Profile</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="/">Logout</a>
+                  <form class="logout-form" id="logout-form" action="/api/admin-logout" method="post">
+                    <a type="submit" class="dropdown-item" href="javascript:{}" onclick="document.getElementById('logout-form').submit();">Logout</a>
+                  </form> 
                 </li>
               </ul>
             </li>
@@ -168,20 +170,25 @@
                               <% }else if(allbooking[i].book_status == 'unpaid'){ %>
                                  <p style="color:red;">Cannot enter yet</p>
                               <% }else if(allbooking[i].book_status == 'expired'){ %>
-                                <p style="color:red;">Didn't Enter</p>
+                                <p style="color:red;">No Entry</p>
                               <% }else if(allbooking[i].book_status == 'cancel'){ %>
                                 <p style="color:red;">Cannot Enter</p>
                               <% }else {%>
-                              <%= allbooking[i].date_entry  %>
+                                <%= allbooking[i].date_entry  %>
                               <% } %>
                           </td>
                           <td>
                             <% if(allbooking[i].date_exit == '0000-00-00 00:00:00'){ %>
                              
-                                <p style="color:red;">No Exit</p>
+                                <!-- <p style="color:blue;">No Exit yet </p> -->
                           
                             <% }else { %>
-                              <%= allbooking[i].date_entry %>
+                              <!-- if rate type is hourly and user parking time is sobra mag rered to(naubos na english ko) -->
+                                <% if(allbooking[i].date_exit >= allbooking[i].park_hrs && allbooking[i].date_exit != 0){ %>
+                                  <p style="color:red;"><%= allbooking[i].date_entry %></p>
+                                  <% }else{ %>
+                                    <%= allbooking[i].date_entry %>
+                                  <% }%> 
                             <% }%>
                           </td>
                           <% if(allbooking[i].book_status == 'paid' && allbooking[i].date_entry == '0000-00-00 00:00:00') {%>

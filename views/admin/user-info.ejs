@@ -45,7 +45,7 @@
         <div class="collapse navbar-collapse" id="topNavBar">
           <form class="d-flex ms-auto my-3 my-lg-0">
             <div class="input-group">
-              <input
+              <!-- <input
                 class="form-control"
                 type="search"
                 placeholder="Search"
@@ -53,7 +53,7 @@
               />
               <button class="btn btn-primary" type="submit">
                 <i class="bi bi-search"></i>
-              </button>
+              </button> -->
             </div>
           </form>
           <ul class="navbar-nav">
@@ -68,9 +68,9 @@
                 <i class="bi bi-person-fill"></i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <!-- <li><a class="dropdown-item" href="#">Profile</a></li> -->
                 <li>
-                  <a class="dropdown-item" href="../index.html">Logout</a>
+                  <a class="dropdown-item" href="/">Logout</a>
                 </li>
               </ul>
             </li>
@@ -137,27 +137,70 @@
             </li>
             <li class="my-4"><hr class="dropdown-divider bg-light" /></li>
 
-            <li>
+            <!-- <li>
               <div class="text-muted small fw-bold text-uppercase px-3">
                 Website Settings
               </div>
-            </li>
-            <li>
+            </li> -->
+            <!-- <li>
               <a href="/settings" class="nav-link px-3">
                 <span class="me-2"><i class="bi bi-gear-fill"></i></span>
                 <span>Settings</span>
               </a>
-            </li>
+            </li> -->
           </ul>
         </nav>
       </div>
     </div>
+<!--add modal -->
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add Employee</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form  id="emp-form" action="/api/add-employee" method="post">
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label" required for="rate">Name:</label>
+                    <input type="text" name="admin_name" id="admin_name" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" required for="rate">Username:</label>
+                    <input type="text" name="admin_username" id="admin_username" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" required for="rate">Password:</label>
+                    <input type="password" name="admin_password" id="admin_password" class="form-control">
+                  </div>
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                  <button type="submit"class="btn btn-danger"data-bs-dismiss="modal" href="javascript:{}" onclick="document.getElementById('emp-form').submit();">
+                    Cancel
+                  </button>
+                </div>
+            </form>
+            </div>
+          
+          </div>
+        </div>
+      </div>
+
+<!-- end modal -->
     <!-- offcanvas -->
     <main class="mt-5 pt-3">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
-            <h4>User Info</h4>
+            <h4>Employees</h4>
           </div>
         </div>
 
@@ -166,7 +209,8 @@
             <div class="card">
               <div class="card-header">
                 <span><i class="bi bi-table me-2"></i></span> Data Table
-                <a href="#" class="btn btn-primary">Add Entry</a>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Add Employee</a>
+                    
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -178,67 +222,72 @@
                     <thead>
                       <tr>
                         <th>Name</th>
-                        <th>Status</th>
+                        <th>Username</th>
                         <th>Position</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Yuri</td>
-                        <td>
-                          <a href="#" class="btn btn-success">Success</a>
-                        </td>
-                        <td>Slot 2</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Yuri</td>
-                        <td>
-                          <a href="#" class="btn btn-danger">Danger</a>
-                        </td>
-                        <td>Slot 2</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Yuri</td>
-                        <td>
-                          <a href="#" class="btn btn-success">Success</a>
-                        </td>
-                        <td>Slot 2</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Yuri</td>
-                        <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                        <td>Slot 2</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Yuri</td>
-                        <td>
-                          <a href="#" class="btn btn-success">Success</a>
-                        </td>
-                        <td>Slot 2</td>
-                        <td>
-                          <a href="#" class="btn btn-primary">Action</a>
-                        </td>
-                      </tr>
+                      <% for(var i = 0; i < employee.length; i++) {%>
+                        <tr>
+                              <td><span id="eadmin_name"><%= employee[i].admin_name %></span></td>
+                              <td><span id="eadmin_username"><%= employee[i].admin_username %></span></td>
+                              <td><span id="eposition"><%= employee[i].position %></span></td>
+                                <td>
+                                  <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModaledit<%= employee[i].admin_id %>">Edit info</a>
+                                </td>
+                            </tr>
+                                                                  
+                                      <!--edit modal -->
+                                      <div class="modal" id="myModaledit<%= employee[i].admin_id %>">
+                                        <div class="modal-dialog">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Add Employee</h5>
+                                              <button
+                                                type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                              ></button>
+                                            </div>
+                                            <div class="modal-body">
+                                              <form  id="emp-form" action="/api/edit-employee" method="post">
+                                                <div class="modal-body">
+                                                  <div class="mb-3">
+                                                    <label class="form-label" required for="admin_name">Name:</label>
+                                                    <input type="text" value="<%= employee[i].admin_name %>" name="admin_name" id="admin_name" class="form-control">
+                                                  </div>
+                                                  <div class="mb-3">
+                                                    <label class="form-label" required for="admin_username">Username:</label>
+                                                    <input type="text" value="<%= employee[i].admin_username %>" name="admin_username" id="admin_username" class="form-control">
+                                                  </div>
+                                                  <div class="mb-3">
+                                                    <label class="form-label" required for="admin_password">Password:</label>
+                                                    <input type="password" placeholder="********"  name="admin_password" id="admin_password" class="form-control">
+                                                    <input type="number" value="<%= employee[i].admin_id %>" name="admin_id" id="admin_id" class="form-control" hidden>
+                                                  </div>
+                                                  
+                                                </div>
+                                                <div class="modal-footer">
+                                                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                  <button type="submit"class="btn btn-danger"data-bs-dismiss="modal" href="javascript:{}" onclick="document.getElementById('emp-form').submit();">
+                                                    Cancel
+                                                  </button>
+                                                </div>
+                                            </form>
+                                            </div>
+                                          
+                                          </div>
+                                        </div>
+                                      </div>
+
+                      <% } %>
+
                     </tbody>
                     <tfoot>
                       <tr>
                         <th>Name</th>
-                        <th>Status</th>
+                        <th>Username</th>
                         <th>Position</th>
                         <th>Action</th>
                       </tr>
@@ -251,11 +300,14 @@
         </div>
       </div>
     </main>
+
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
     <script src="/js/jquery-3.5.2.js"></script>
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap5.min.js"></script>
     <script src="/js/script.js"></script>
+
   </body>
+
 </html>

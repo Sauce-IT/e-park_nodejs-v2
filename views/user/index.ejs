@@ -333,66 +333,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                    	<th scope="row">1</th>
-						 <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-						<td>
-							<a href="#" class="btn btn-danger">Danger</a>
-						</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-						<td>
-							<a href="#" class="btn btn-danger">Danger</a>
-						</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-						<td>
-							<a href="#" class="btn btn-success">Success</a>
-						  </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                         <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">6</th>
-                         <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">7</th>
-                        <td>
-							<a href="#" class="btn btn-danger">Danger</a>
-						</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">8</th>
-                        <td>
-							<a href="#" class="btn btn-success">Success</a>
-						  </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">9</th>
-                         <td>
-                          <a href="#" class="btn btn-warning">Warning</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">10</th>
-						<td>
-							<a href="#" class="btn btn-success">Success</a>
-						  </td>
-                    </tr>
+					<% for(var i = 0; i < slots.length; i++) {%>
+						<tr>
+							<th scope="row"><%= slots[i].Slot_id %></th>
+							<% if(slots[i].Availability == 'Available') {%>
+								<td>
+								<a href="#" class="btn btn-success" style="width: 130px;"><%= slots[i].Availability %></a>
+								</td>
+							<% }%>
+							<% if(slots[i].Availability == 'Reserved') {%>
+								<td>
+								<a href="#" class="btn btn-warning" style="width: 130px;"><%= slots[i].Availability %></a>
+								</td>
+							<% }%>
+							<% if(slots[i].Availability == 'Occupied') {%>
+								<td>
+								<a href="#" class="btn btn-primary" style="width: 130px;"><%= slots[i].Availability %></a>
+								</td>
+							<% }%>
+							<% if(slots[i].Availability == 'Maintenance') {%>
+								<td>
+								<a href="#" class="btn btn-danger" style="width: 130px;"><%= slots[i].Availability %></a>
+								</td>
+							<% }%>
+	
+						</tr>
+						<% }%>
+	
                 </tbody>
             </table>
         </div>

@@ -1,15 +1,44 @@
 const barchart = document.querySelectorAll(".barchart");
 
+
+const data= [];
+const label = [];
+const data1= [];
+const label1 = [];
+
+
 barchart.forEach(function (chart) {
+  
+// get data from database
+  fetch("http://localhost/e-parkapi/getForchart", {
+    method: "POST",
+    body: JSON.stringify({
+      user_email: ''
+    }),
+  }).then(async function (response) {
+    const res = await response.json();
+    if (res.status["remarks"] === "failed") {
+      console.log("failed");
+    } else {
+      res.payload.forEach(count => {
+            label.push(count.paid_date)
+            data.push(count.total)
+            
+          });
+  
+    
+    console.log(label);
+//end 
+
   var ctx = chart.getContext("2d");
   var myChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      labels: label,
       datasets: [
         {
           label: "# of Available Slots",
-          data: [12, 19, 3, 5, 2, 3],
+          data: data,
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -38,62 +67,46 @@ barchart.forEach(function (chart) {
       },
     },
   });
+  // end else
+}
 });
-
-const piechart = document.querySelectorAll(".piechart");
-
-piechart.forEach(function (chart) {
-  var ctx = chart.getContext("2d");
-  var myChart = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-      datasets: [
-        {
-          label: "# of Cars IN",
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-            "rgba(75, 192, 192, 0.2)",
-            "rgba(153, 102, 255, 0.2)",
-            "rgba(255, 159, 64, 0.2)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 206, 86, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(153, 102, 255, 1)",
-            "rgba(255, 159, 64, 1)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
 });
 
 const linechart = document.querySelectorAll(".linechart");
+ 
 
 linechart.forEach(function (chart) {
+
+  
+// get data from database
+fetch("http://localhost/e-parkapi/getForchart", {
+  method: "POST",
+  body: JSON.stringify({
+    user_email: ''
+  }),
+}).then(async function (response) {
+  const res = await response.json();
+  if (res.status["remarks"] === "failed") {
+    console.log("failed");
+  } else {
+    res.payload.forEach(count => {
+          label1.push(count.paid_date)
+          data1.push(count.total)
+          
+        });
+   
+  
+  console.log(label);
+//end
   var ctx = chart.getContext("2d");
   var myChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      labels: label1,
       datasets: [
         {
           label: "# of Users",
-          data: [12, 19, 3, 5, 2, 3],
+          data: data1,
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -122,9 +135,11 @@ linechart.forEach(function (chart) {
       },
     },
   });
+  // else end
+  }
 });
-
-
+  
+});
 
 $(document).ready(function () {
   $(".data-table").each(function (_, table) {
