@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios").default;
+const url = "https://epark-project-api.herokuapp.com";
 
 sampledata = [
   {
@@ -17,7 +18,7 @@ rates = [];
 router.get("/", (req, res) => {
 
   axios
-  .post("http://localhost/e-parkapi/getTodayBookings")
+  .post(url + "/getTodayBookings")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -47,7 +48,7 @@ router.get("/home", (req, res) => {
   
   // get user booking info
   axios
-  .post("http://localhost/e-parkapi/getuserbook", data)
+  .post(url + "/getuserbook", data)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const book = response.data.payload;
@@ -73,7 +74,7 @@ router.get("/home", (req, res) => {
                       });
 
                       axios
-                      .post("http://localhost/e-parkapi/updateBookingstatus", data)
+                      .post(url + "/updateBookingstatus", data)
                       .then((response) => {
                             console.log('update to expired success!!!!!!!!!!!!!!!!!');
                           })
@@ -96,7 +97,7 @@ router.get("/home", (req, res) => {
 
   // available today slot
     axios
-      .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+      .post(url + "/getTodayBookings", sampledata)
         .then((response) => {
           if (response.data.status["remarks"] === "success") {
             const slot = response.data.payload;
@@ -112,7 +113,7 @@ router.get("/home", (req, res) => {
  
   // get current rates
   axios
-      .post("http://localhost/e-parkapi/getRate", sampledata)
+      .post(url + "/getRate", sampledata)
         .then((response) => {
           // console.log(response);
           if (response.data.status["remarks"] === "success") {
@@ -159,10 +160,11 @@ router.get("/admin-changepass", (req, res) => {
 
 router.get("/admin-dashboard", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
+  console.log(req.session.user.position);
 
   //get parking slot  
   axios
-  .post("http://localhost/e-parkapi/getSlot", sampledata)
+  .post(url + "/getSlot", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -178,7 +180,7 @@ router.get("/admin-dashboard", (req, res) => {
       
   // get all user 
   axios
-  .post("http://localhost/e-parkapi/getAlluser", sampledata)
+  .post(url + "/getAlluser", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -194,7 +196,7 @@ router.get("/admin-dashboard", (req, res) => {
 
   // available today slot
   axios
-  .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+  .post(url + "/getTodayBookings", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -217,7 +219,7 @@ router.get("/manage-parking", (req, res) => {
 
   // available today slot
   axios
-  .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+  .post(url + "/getTodayBookings", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -233,7 +235,7 @@ router.get("/manage-parking", (req, res) => {
 
   // get current rates
   axios
-  .post("http://localhost/e-parkapi/getRate", sampledata)
+  .post(url + "/getRate", sampledata)
     .then((response) => {
       // console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -256,7 +258,7 @@ router.get("/manage-booking", (req, res) => {
  
   // get user booking info
   axios
-  .post("http://localhost/e-parkapi/getAllBookings")
+  .post(url + "/getAllBookings")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const book = response.data.payload;
@@ -282,7 +284,7 @@ router.get("/manage-booking", (req, res) => {
                       });
 
                       axios
-                      .post("http://localhost/e-parkapi/updateBookingstatus", data)
+                      .post(url + "/updateBookingstatus", data)
                       .then((response) => {
                             console.log('update to expired success!!!!!!!!!!!!!!!!!');
                           })
@@ -304,7 +306,7 @@ router.get("/manage-booking", (req, res) => {
 
   // All booking
   axios
-  .post("http://localhost/e-parkapi/getAllBookings", sampledata)
+  .post(url + "/getAllBookings", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -320,7 +322,7 @@ router.get("/manage-booking", (req, res) => {
 
   // available today slot
       axios
-      .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+      .post(url + "/getTodayBookings", sampledata)
         .then((response) => {
           if (response.data.status["remarks"] === "success") {
             const slot = response.data.payload;
@@ -340,19 +342,19 @@ router.get("/user-info", (req, res) => {
   
  // get employee info
  axios
- .post("http://localhost/e-parkapi/getEmployee")
+ .post(url + "/getEmployee")
    .then((response) => {
      if (response.data.status["remarks"] === "success") {
        const book = response.data.payload;
        userbook = book;
        console.log('book',book);
      } else {
-        userbook = null;
+        userbook = sampledata;
          res.redirect("/home");
          console.log(error);
        }
      }).catch(function (error) {
-       userbook = null;
+       userbook = sampledata;
      });
 
 
@@ -365,7 +367,7 @@ router.get("/user-logs", (req, res) => {
 
   // All booking
   axios
-  .post("http://localhost/e-parkapi/getAllBookings")
+  .post(url + "/getAllBookings")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -399,7 +401,7 @@ router.get("/manage-booking-clerk", (req, res) => {
 
   // All booking
   axios
-  .post("http://localhost/e-parkapi/getAllBookings", sampledata)
+  .post(url + "/getAllBookings", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -415,7 +417,7 @@ router.get("/manage-booking-clerk", (req, res) => {
 
   // available today slot
       axios
-      .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+      .post(url + "/getTodayBookings", sampledata)
         .then((response) => {
           if (response.data.status["remarks"] === "success") {
             const slot = response.data.payload;
@@ -439,7 +441,7 @@ router.get("/manage-parking-clerk", (req, res) => {
 
   // available today slot
   axios
-  .post("http://localhost/e-parkapi/getTodayBookings", sampledata)
+  .post(url + "/getTodayBookings", sampledata)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
@@ -455,7 +457,7 @@ router.get("/manage-parking-clerk", (req, res) => {
 
   // get current rates
   axios
-  .post("http://localhost/e-parkapi/getRate", sampledata)
+  .post(url + "/getRate", sampledata)
     .then((response) => {
       // console.log(response);
       if (response.data.status["remarks"] === "success") {

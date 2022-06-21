@@ -129,7 +129,7 @@
             <li>
               <a href="/user-info" class="nav-link px-3">
                 <span class="me-2"><i class="bi bi-person-circle"></i></span>
-                <span>User Info</span>
+                <span>Clerk info</span>
               </a>
             </li>
 
@@ -158,6 +158,46 @@
         </nav>
       </div>
     </div>
+    <div class="modal" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Change peso rate/type</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <form  id="rate-form" action="/api/change-rate" method="post">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label" required for="rate">Rate:</label>
+                  <input type="number" name="rate" id="rate" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" required for="rate">Type:</label>
+                  <select name="type" id="type"  class="form-control">
+                    <option value="Fixed">Fixed</option>
+                    <option value="Hourly">Hourly</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit"class="btn btn-danger"data-bs-dismiss="modal" href="javascript:{}" onclick="document.getElementById('rate-form').submit();">
+                  Cancel
+                </button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+
+
+<!-- end of modal -->
     <!-- offcanvas -->
     <main class="mt-5 pt-3">
       <div class="container-fluid">

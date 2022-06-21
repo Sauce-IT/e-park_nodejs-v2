@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios").default;
+const url = "https://epark-project-api.herokuapp.com";
 
 
 // admin login =============================================================================================
@@ -10,11 +11,13 @@ router.post("/admin-login", (req, res) => {
     admin_password: req.body.password,
   });
   axios
-    .post("http://localhost/e-parkapi/login-admin", loginData)
+    .post(url + "/login-admin", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
         req.session.user = response.data.payload;
+        console.log(req.session.user);
+
         if(response.data.payload['position'] == 'admin')
         {
           res.redirect("/admin-dashboard");
@@ -38,7 +41,7 @@ router.post("/changt-to-inactive", (req, res) => {
     availability: 'Inactive',
   });
   axios
-    .post("http://localhost/e-parkapi/updatePark", loginData)
+    .post(url + "/updatePark", loginData)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         
@@ -60,11 +63,16 @@ router.post("/changt-to-active", (req, res) => {
     availability: 'Active',
   });
   axios
-    .post("http://localhost/e-parkapi/updatePark", loginData)
+    .post(url + "/updatePark", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
+        if(req.session.user.position == "admin")
+        {
           res.redirect("/manage-parking");
+        }else{
+          res.redirect("/manage-parking-clerk");
+        }  
       } else {
         res.redirect("/admin-login");
       }
@@ -77,11 +85,16 @@ router.post("/changt-to-active", (req, res) => {
 // add new slot
 router.post("/Add-slot", (req, res) => {
   axios
-    .post("http://localhost/e-parkapi/add-slot")
+    .post(url + "/add-slot")
     .then((response) => {
-      console.log(response);
       if (response.data.status["remarks"] === "success") {
-          res.redirect("/manage-parking");
+          if(req.session.user.position == "admin")
+          {
+            res.redirect("/manage-parking");
+          }else{
+            res.redirect("/manage-parking-clerk");
+          }
+
       } else {
         res.redirect("/admin-login");
       }
@@ -100,7 +113,7 @@ router.post("/add-employee", (req, res) => {
     admin_password: req.body.admin_password,
   });
   axios
-    .post("http://localhost/e-parkapi/register-admin", loginData)
+    .post(url + "/register-admin", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -123,7 +136,7 @@ router.post("/edit-employee", (req, res) => {
     admin_password: req.body.admin_password,
   });
   axios
-    .post("http://localhost/e-parkapi/updateClerk", loginData)
+    .post(url + "/updateClerk", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -152,7 +165,7 @@ router.post("/update-profile-clerk", (req, res) => {
   });
   console.log(data);
   axios
-    .post("http://localhost/e-parkapi/updateProfileclerk", data)
+    .post(url + "/updateProfileclerk", data)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         req.session.user = response.data.payload;
@@ -176,7 +189,7 @@ router.post("/change-rate", (req, res) => {
   });
 
   axios
-    .post("http://localhost/e-parkapi/updateRates", loginData)
+    .post(url + "/updateRates", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -199,7 +212,7 @@ router.post("/update-paid", (req, res) => {
   });
 
   axios
-    .post("http://localhost/e-parkapi/updateBookingstatus", data)
+    .post(url + "/updateBookingstatus", data)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         res.redirect("/manage-booking-clerk");
@@ -231,7 +244,7 @@ router.post("/user-login", (req, res) => {
   });
 
   axios
-    .post("http://localhost/e-parkapi/login-user", loginData)
+    .post(url + "/login-user", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -257,7 +270,7 @@ router.post("/register-user", (req, res) => {
   });
 
   axios
-    .post("http://localhost/e-parkapi/register-user", loginData)
+    .post(url + "/register-user", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
@@ -279,7 +292,7 @@ router.post("/add-reservation", (req, res) => {
   //get current rate 
   var rates = 0;
   axios
-  .post("http://localhost/e-parkapi/getRate")
+  .post(url + "/getRate")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const rate = response.data.payload;
@@ -298,7 +311,7 @@ router.post("/add-reservation", (req, res) => {
           });
      
           axios
-            .post("http://localhost/e-parkapi/addReserve", data)
+            .post(url + "/addReserve", data)
             .then((response) => {
               if (response.data.status["remarks"] === "success") {
                    res.redirect("/home");
@@ -325,7 +338,7 @@ router.post("/user-cancel-booking", (req, res) => {
   });
 
   axios
-    .post("http://localhost/e-parkapi/updateBookingstatus", data)
+    .post(url + "/updateBookingstatus", data)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         // req.session.user = response.data.payload;
@@ -356,7 +369,7 @@ router.post("/update-profile", (req, res) => {
     id:  req.session.user.id
   });
   axios
-    .post("http://localhost/e-parkapi/updateProfileuser", data)
+    .post(url + "/updateProfileuser", data)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         req.session.user = response.data.payload;

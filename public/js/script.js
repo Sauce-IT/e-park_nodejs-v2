@@ -1,5 +1,5 @@
 const barchart = document.querySelectorAll(".barchart");
-
+const url = "https://epark-project-api.herokuapp.com";
 
 const data= [];
 const label = [];
@@ -10,7 +10,7 @@ const label1 = [];
 barchart.forEach(function (chart) {
   
 // get data from database
-  fetch("http://localhost/e-parkapi/getForchart", {
+  fetch(url +"/getForchart", {
     method: "POST",
     body: JSON.stringify({
       user_email: ''
@@ -20,9 +20,16 @@ barchart.forEach(function (chart) {
     if (res.status["remarks"] === "failed") {
       console.log("failed");
     } else {
+      
       res.payload.forEach(count => {
+          if(count.paid_date == null){
+            label.push("0")
+            data.push("0")
+          }else{
             label.push(count.paid_date)
             data.push(count.total)
+          }
+            
             
           });
   
@@ -79,7 +86,7 @@ linechart.forEach(function (chart) {
 
   
 // get data from database
-fetch("http://localhost/e-parkapi/getForchart", {
+fetch(url +"/getForchart", {
   method: "POST",
   body: JSON.stringify({
     user_email: ''
@@ -96,6 +103,7 @@ fetch("http://localhost/e-parkapi/getForchart", {
         });
    
   
+  console.log(data);
   console.log(label);
 //end
   var ctx = chart.getContext("2d");

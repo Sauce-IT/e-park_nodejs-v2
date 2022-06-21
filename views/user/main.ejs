@@ -165,7 +165,7 @@
 								</div>
 								<% if(userbook[i].book_status == 'paid' ) { %>
 								
-									<% if(userbook[i].date_entry != '0000-00-00 00:00:00'){ %>
+									<% if(userbook[i].date_entry != null){ %>
 										<div class="mb-4" >
 											<label class="form-label">Qr code given by clerk: </label>
 											<div id="qrcode" >
