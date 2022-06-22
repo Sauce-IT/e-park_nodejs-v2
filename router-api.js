@@ -152,9 +152,28 @@ router.post("/edit-employee", (req, res) => {
 
 
 //clerk============================================================================================================
+// scan-booking test
+
+router.post("/scan-booking", (req, res) => {
+
+  const data = JSON.stringify({
+    booking_id: req.body.booking_id
+  });
+  console.log(data);
+  axios
+    .post(url +"/scan", data)
+    .then((response) => {
+        var data = response.data.status["remarks"];
+        console.log(data);
+        res.redirect("/manage-booking-clerk");
+    })
+    .catch(function (error) {
+      res.redirect("/manage-booking-clerk");
+
+    });
+});
 
 // update profile
-
 router.post("/update-profile-clerk", (req, res) => {
 
   const data = JSON.stringify({
@@ -171,13 +190,14 @@ router.post("/update-profile-clerk", (req, res) => {
         req.session.user = response.data.payload;
         console.log(req.session.user);
         res.redirect("/clerk-profile");
-      } else {
-        // req.session.message = response.data.status["message"];
-        res.redirect("/adminclerk-login");
+      } else {        
+        res.redirect("/admin-login");
+
       }
     })
     .catch(function (error) {
-      res.redirect("/adminclerk-login");
+      res.redirect("/admin-login");
+
     });
 });
 
@@ -195,11 +215,13 @@ router.post("/change-rate", (req, res) => {
       if (response.data.status["remarks"] === "success") {
         res.redirect("/manage-parking-clerk");
       } else {
-        res.redirect("/user-login");
+        res.redirect("/admin-login");
+
       }
     })
     .catch(function (error) {
-      res.redirect("/user-login");
+      res.redirect("/admin-login");
+
     });
 });
 
