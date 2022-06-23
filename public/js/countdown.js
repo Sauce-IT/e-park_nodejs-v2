@@ -46,20 +46,16 @@ function countdown(){
                 {
                     document.getElementById("counter").innerHTML = "00:00 (Expired)<br> Reservation will be available after refresh";
                     clearInterval(counta);
-
-                
-
-
                 }
 
                 // var days = Math.floor(aw / (1000 * 60 * 60 * 24));
-                // var hours = Math.floor((aw % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var hours = Math.floor((aw % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((aw % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((aw % (1000 * 60)) / 1000);
                 
                 if(document.getElementById("counter").innerHTML != null)
                 {
-                    document.getElementById("counter").innerHTML =  minutes + ":" + seconds ;
+                    document.getElementById("counter").innerHTML =  hours + ':' +  minutes + ":" + seconds ;
                 }else{
                     
                 }
@@ -68,7 +64,7 @@ function countdown(){
                 {
                     min = 0;
                     sec = 0;
-                    document.getElementById("counter").innerHTML = "00:00";
+                    document.getElementById("counter").innerHTML = "00:00:00";
 
                 }
                 
