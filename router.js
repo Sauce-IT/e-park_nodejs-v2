@@ -1,7 +1,24 @@
 const express = require("express");
+const SerialPort = require("serialport");
 const router = express.Router();
 const axios = require("axios").default;
 const url = "https://epark-project-api.herokuapp.com";
+
+const parsers = SerialPort.parsers;
+
+const parser = new parsers.Readline({
+  delimiter: "\r\n",
+});
+
+const port = new SerialPort("COM3", {
+  baudRate: 9600,
+  dataBits: 8,
+  parity: "none",
+  stopBits: 1,
+  flowControl: false,
+});
+
+port.pipe(parser);
 
 sampledata = [
   {
@@ -398,7 +415,21 @@ router.get("/clerk-profile", (req, res) => {
 
 router.get("/manage-booking-clerk", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-
+    parser.on("data", function (data) {
+      if (data.includes("camera")) {
+        const check = data.split(":");
+    
+        if (check[1] === "detected") {
+          console.log("detected", data);
+        } else {
+          console.log("not detected", data);
+        }
+      } else {
+        console.log("not", data);
+      }
+    
+      //console.log(data);
+    });
   // All booking
   axios
   .post(url + "/getAllBookings", sampledata)
