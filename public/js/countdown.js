@@ -24,7 +24,7 @@ function countdown(){
 
                 var paid_date = new Date(document.getElementById("status").value);
                 var count = new Date(paid_date.getTime() + (60 * 60000));
-                var interval = new Date(paid_date.getTime() + 33 * 60000);
+                var interval = new Date(paid_date.getTime() + 69 * 60000);
                 var now = new Date();
                 var gap = (count-now);
 
