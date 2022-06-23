@@ -156,8 +156,10 @@ router.post("/edit-employee", (req, res) => {
 
 router.post("/scan-booking", (req, res) => {
 
+  var booking_id = req.body.booking_id.split(":")[1];
+  
   const data = JSON.stringify({
-    booking_id: req.body.booking_id
+    booking_id: booking_id
   });
   console.log(data);
   axios

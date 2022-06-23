@@ -126,9 +126,10 @@
             <h5 class="modal-title">Test scan and update entry and exit</h5>
             <button type="button" class="btn-close-white" data-bs-dismiss="modal">x</button>
           </div>
-          <form  id="scan-form" action="/api/scan-booking" method="post">
+          <form id="scan-form" action="/api/scan-booking" method="post">
               
-            Booking update <input id="booking_id" name="booking_id" >
+            Booking update <input type="text" id="booking_id" name="booking_id" >
+
                 <div class="modal-footer" >
                   <button  href="javascript:{}" onclick="document.getElementById('scan-form').submit();" class="btn btn-outline-dark btn-md submit-btn"  data-bs-dismiss="modal">Scan</button>
                   <button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-dismiss="modal">No</button>

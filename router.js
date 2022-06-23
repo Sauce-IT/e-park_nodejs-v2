@@ -78,11 +78,11 @@ router.get("/home", (req, res) => {
                 if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
                 {
                   var paid_date = new Date(book[i].paid_date);
-                  var date_expiration = new Date(paid_date.getTime() + (30 * 60000));
+                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
                   var now = new Date();
                   
                   //update book status if the aloted time overlap to the time givin 
-                  if(now > date_expiration && book[i].date_entry == '0000-00-00 00:00:00')
+                  if(now > date_expiration && book[i].date_entry == null)
                   {
                     if(book[i].book_status != 'expired' && book[i].paid_date != null){
                       const data = JSON.stringify({
@@ -288,11 +288,11 @@ router.get("/manage-booking", (req, res) => {
                 if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
                 {
                   var paid_date = new Date(book[i].paid_date);
-                  var date_expiration = new Date(paid_date.getTime() + (30 * 60000));
+                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
                   var now = new Date();
                   
                   //update book status if the aloted time overlap to the time givin 
-                  if(now > date_expiration && book[i].date_entry == '0000-00-00 00:00:00')
+                  if(now > date_expiration && book[i].date_entry == null)
                   {
                     if(book[i].book_status != 'expired' && book[i].paid_date != null){
                       const data = JSON.stringify({
@@ -415,21 +415,79 @@ router.get("/clerk-profile", (req, res) => {
 
 router.get("/manage-booking-clerk", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-    parser.on("data", function (data) {
-      if (data.includes("camera")) {
-        const check = data.split(":");
-    
-        if (check[1] === "detected") {
-          console.log("detected", data);
-        } else {
-          console.log("not detected", data);
+  if(!port.isOpen){
+    port.open()
+  }
+  parser.once("data", function (data) {
+    console.log(data)
+    if (data.includes("booking_id")) {
+      axios
+      .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
+      .then((response) => {
+        console.log("detected!", response.data)
+        if(port.isOpen){
+          port.close();
         }
+        // res.redirect("/manage-booking-clerk");
+      })
+      .catch(function (error) {
+        console.log("not detected!", data)
+        
+        // res.redirect("/manage-booking-clerk");
+      });
+    } 
+  });
+
+
+  // expiration
+  // get user booking info
+  axios
+  .post(url + "/getAllBookings")
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        const book = response.data.payload;
+        userbook = book;
+        // console.log('book',book);
+              // check user booking
+               for(var i = 0; i < book.length; i++){
+
+                //check if the book is either paid or it is stil no expired
+                if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
+                {
+                  var paid_date = new Date(book[i].paid_date);
+                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
+                  var now = new Date();
+                  
+                  //update book status if the aloted time overlap to the time givin 
+                  if(now > date_expiration && book[i].date_entry == null)
+                  {
+                    if(book[i].book_status != 'expired' && book[i].paid_date != null){
+                      const data = JSON.stringify({
+                        booking_id: book[i].booking_id,
+                        book_status: 'expired'
+                      });
+
+                      axios
+                      .post(url + "/updateBookingstatus", data)
+                      .then((response) => {
+                            console.log('update to expired success!!!!!!!!!!!!!!!!!');
+                          })
+                          .catch(function (error) {
+                            res.redirect("/user-login");
+                          });
+                      }
+                  }
+                }
+              }
       } else {
-        console.log("not", data);
-      }
-    
-      //console.log(data);
-    });
+         userbook = null;
+          res.redirect("/home");
+          console.log(error);
+        }
+      }).catch(function (error) {
+        userbook = null;
+      });
+
   // All booking
   axios
   .post(url + "/getAllBookings", sampledata)
@@ -437,7 +495,7 @@ router.get("/manage-booking-clerk", (req, res) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
         sampledata = slot;
-        console.log('slot available today',slot);
+        // console.log('slot available today',slot);
       } else {
           sampledata = sampledata;
           res.redirect("/home");
@@ -453,7 +511,7 @@ router.get("/manage-booking-clerk", (req, res) => {
           if (response.data.status["remarks"] === "success") {
             const slot = response.data.payload;
             userbook = slot;
-            console.log('slot available today',slot);
+            // console.log('slot available today',slot);
           } else {
               // sampledata = sampledata;
               res.redirect("/home");
