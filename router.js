@@ -10,7 +10,7 @@ const parser = new parsers.Readline({
   delimiter: "\r\n",
 });
 
-const port = new SerialPort("COM3", {
+const port = new SerialPort("COM5", {
   baudRate: 9600,
   dataBits: 8,
   parity: "none",
@@ -32,6 +32,7 @@ rates = [];
 // routes -------------------------------
 
 // user route ==================================================================================
+// --ok
 router.get("/", (req, res) => {
 
   axios
@@ -41,6 +42,7 @@ router.get("/", (req, res) => {
         const slot = response.data.payload;
         sampledata = slot;
         console.log('slot available today',slot);
+        res.render("index",{slots:sampledata});
       } else {
           sampledata = sampledata;
           res.redirect("/home");
@@ -49,84 +51,17 @@ router.get("/", (req, res) => {
       }).catch(function (error) {
       });
 
-  res.render("index",{slots:sampledata});
+  
 });
 
 router.get("/user-login", (req, res) => {
   res.render("user-login", { message: req.session.message });
 });
 
+// --ok
 router.get("/home", (req, res) => {
   if (!req.session.user) return res.redirect("/user-login");
-  
-  const data = JSON.stringify({   
-     id : req.session.user.id
-  });
-  
-  // get user booking info
-  axios
-  .post(url + "/getuserbook", data)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const book = response.data.payload;
-        userbook = book;
-        console.log('book',book);
-              // check user booking
-               for(var i = 0; i < book.length; i++){
-
-                //check if the book is either paid or it is stil no expired
-                if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
-                {
-                  var paid_date = new Date(book[i].paid_date);
-                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
-                  var now = new Date();
-                  
-                  //update book status if the aloted time overlap to the time givin 
-                  if(now > date_expiration && book[i].date_entry == null)
-                  {
-                    if(book[i].book_status != 'expired' && book[i].paid_date != null){
-                      const data = JSON.stringify({
-                        booking_id: book[i].booking_id,
-                        book_status: 'expired'
-                      });
-
-                      axios
-                      .post(url + "/updateBookingstatus", data)
-                      .then((response) => {
-                            console.log('update to expired success!!!!!!!!!!!!!!!!!');
-                          })
-                          .catch(function (error) {
-                            res.redirect("/user-login");
-                          });
-                      }
-                  }
-                }
-              }
-      } else {
-         userbook = null;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-        userbook = null;
-      });
-
-
-  // available today slot
-    axios
-      .post(url + "/getTodayBookings", sampledata)
-        .then((response) => {
-          if (response.data.status["remarks"] === "success") {
-            const slot = response.data.payload;
-            sampledata = slot;
-            console.log('slot available today',slot);
-          } else {
-              sampledata = sampledata;
-              res.redirect("/home");
-              console.log(error);
-            }
-          }).catch(function (error) {
-          });
+ 
  
   // get current rates
   axios
@@ -137,6 +72,95 @@ router.get("/home", (req, res) => {
             const rate = response.data.payload;
             rates = rate;
             console.log('Rate',rates);
+
+                  // available today slot
+                  axios
+                  .post(url + "/getTodayBookings", sampledata)
+                    .then((response) => {
+                      if (response.data.status["remarks"] === "success") {
+                        const slot = response.data.payload;
+                        sampledata = slot;
+                        console.log('slot available today',slot);
+
+ 
+                        const data = JSON.stringify({   
+                          id : req.session.user.id
+                       });
+                       
+                       // get user booking info
+                       axios
+                       .post(url + "/getuserbook", data)
+                         .then((response) => {
+                           if (response.data.status["remarks"] === "success") {
+                             const book = response.data.payload;
+                             userbook = book;
+                             console.log('book',book);
+                                   // check user booking
+                                    for(var i = 0; i < book.length; i++){
+                     
+                                     //check if the book is either paid or it is stil no expired
+                                     if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
+                                     {
+                                       var paid_date = new Date(book[i].paid_date);
+                                       var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
+                                       var now = new Date();
+                                       
+                                       //update book status if the aloted time overlap to the time givin 
+                                       if(now > date_expiration && book[i].date_entry == null)
+                                       {
+                                         if(book[i].book_status != 'expired' && book[i].paid_date != null){
+                                           const data = JSON.stringify({
+                                             booking_id: book[i].booking_id,
+                                             book_status: 'expired'
+                                           });
+                     
+                                           axios
+                                           .post(url + "/updateBookingstatus", data)
+                                           .then((response) => {
+                                                 console.log('update to expired success!!!!!!!!!!!!!!!!!');
+                                               })
+                                               .catch(function (error) {
+                                                 res.redirect("/user-login");
+                                               });
+                                           }
+                                       }
+                                     }
+                                   }
+                     
+                           } else {
+                              userbook = null;
+                               res.redirect("/home");
+                               console.log(error);
+                             }
+                     
+                     
+                               // navigation
+                               res.render("main",{
+                                 slots:sampledata,
+                                 userbook:userbook,
+                                 rates:rates,
+                                 currentUsers:req.session.user
+                             });
+                     
+                     
+                           }).catch(function (error) {
+                             userbook = null;
+                           });
+                     
+                     
+
+
+                        
+                      } else {
+                          sampledata = sampledata;
+                          res.redirect("/home");
+                          console.log(error);
+                        }
+                      }).catch(function (error) {
+                      });
+
+
+
           } else {
               res.redirect("/home");
               console.log(error);
@@ -144,12 +168,7 @@ router.get("/home", (req, res) => {
           }).catch(function (error) {
           });
  
-    res.render("main",{
-            slots:sampledata,
-            userbook:userbook,
-            rates:rates,
-            currentUsers:req.session.user
-        });
+    
     });
 
 router.get("/login", (req, res) => {
@@ -175,6 +194,7 @@ router.get("/admin-changepass", (req, res) => {
   res.render("admin-change-password");
 });
 
+// --ok
 router.get("/admin-dashboard", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
   console.log(req.session.user.position);
@@ -187,38 +207,46 @@ router.get("/admin-dashboard", (req, res) => {
         const slot = response.data.payload;
         userbook = slot;
         console.log('slot',slot);
-      } else {
-          // sampledata = sampledata;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-      });
-      
-  // get all user 
-  axios
-  .post(url + "/getAlluser", sampledata)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata = slot;
-        console.log('users',slot);
-      } else {
-          // sampledata = sampledata;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-      });
 
-  // available today slot
-  axios
-  .post(url + "/getTodayBookings", sampledata)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata2 = slot;
-        console.log('slot available today',slot);
+              
+            // get all user 
+            axios
+            .post(url + "/getAlluser", sampledata)
+              .then((response) => {
+                if (response.data.status["remarks"] === "success") {
+                  const slot = response.data.payload;
+                  sampledata = slot;
+                  console.log('users',slot);
+              
+                        // available today slot
+                        axios
+                        .post(url + "/getTodayBookings", sampledata)
+                          .then((response) => {
+                            if (response.data.status["remarks"] === "success") {
+                              const slot = response.data.payload;
+                              sampledata2 = slot;
+                              console.log('slot available today',slot);
+                            } else {
+                                // sampledata = sampledata;
+                                res.redirect("/home");
+                                console.log(error);
+                              }
+
+                              // navigation
+                              res.render("dashboard",{slots:userbook,users:sampledata,available:sampledata2});
+
+                            }).catch(function (error) {
+                            });
+
+
+                } else {
+                    // sampledata = sampledata;
+                    res.redirect("/home");
+                    console.log(error);
+                  }
+                }).catch(function (error) {
+                });
+        
       } else {
           // sampledata = sampledata;
           res.redirect("/home");
@@ -226,30 +254,16 @@ router.get("/admin-dashboard", (req, res) => {
         }
       }).catch(function (error) {
       });
+  
 
-     res.render("dashboard",{slots:userbook,users:sampledata,available:sampledata2});
 });
 
+// --ok
 router.get("/manage-parking", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
 
 
-  // available today slot
-  axios
-  .post(url + "/getTodayBookings", sampledata)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata = slot;
-        console.log('slot available today',slot);
-      } else {
-          sampledata = sampledata;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-      });
-
+  
   // get current rates
   axios
   .post(url + "/getRate", sampledata)
@@ -259,6 +273,27 @@ router.get("/manage-parking", (req, res) => {
         const rate = response.data.payload;
         rates = rate;
         console.log('Rate',rates);
+
+            // available today slot
+            axios
+            .post(url + "/getTodayBookings", sampledata)
+              .then((response) => {
+                if (response.data.status["remarks"] === "success") {
+                  const slot = response.data.payload;
+                  sampledata = slot;
+                  console.log('slot available today',slot);
+                } else {
+                    sampledata = sampledata;
+                    res.redirect("/home");
+                    console.log(error);
+                  }
+                  // navigation
+                    res.render("manage-parking", { parkings:sampledata,rates:rates });
+
+                }).catch(function (error) {
+                });
+
+
       } else {
           res.redirect("/home");
           console.log(error);
@@ -266,187 +301,19 @@ router.get("/manage-parking", (req, res) => {
       }).catch(function (error) {
       });
 
-  res.render("manage-parking", { parkings:sampledata,rates:rates });
 });
 
+// --ok
 router.get("/manage-booking", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-  
- 
-  // get user booking info
+
+  // expiration get user booking info
   axios
   .post(url + "/getAllBookings")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const book = response.data.payload;
-        userbook = book;
-        console.log('book',book);
-              // check user booking
-               for(var i = 0; i < book.length; i++){
-
-                //check if the book is either paid or it is stil no expired
-                if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
-                {
-                  var paid_date = new Date(book[i].paid_date);
-                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
-                  var now = new Date();
-                  
-                  //update book status if the aloted time overlap to the time givin 
-                  if(now > date_expiration && book[i].date_entry == null)
-                  {
-                    if(book[i].book_status != 'expired' && book[i].paid_date != null){
-                      const data = JSON.stringify({
-                        booking_id: book[i].booking_id,
-                        book_status: 'expired'
-                      });
-
-                      axios
-                      .post(url + "/updateBookingstatus", data)
-                      .then((response) => {
-                            console.log('update to expired success!!!!!!!!!!!!!!!!!');
-                          })
-                          .catch(function (error) {
-                            res.redirect("/user-login");
-                          });
-                      }
-                  }
-                }
-              }
-      } else {
-         userbook = null;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-        userbook = null;
-      });
-
-  // All booking
-  axios
-  .post(url + "/getAllBookings", sampledata)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata = slot;
-        console.log('slot available today',slot);
-      } else {
-          sampledata = sampledata;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-      });
-
-  // available today slot
-      axios
-      .post(url + "/getTodayBookings", sampledata)
-        .then((response) => {
-          if (response.data.status["remarks"] === "success") {
-            const slot = response.data.payload;
-            userbook = slot;
-            console.log('slot available today',slot);
-          } else {
-              res.redirect("/home");
-              console.log(error);
-            }
-          }).catch(function (error) {
-          });
-  res.render("manage-booking",{allbooking:sampledata,slots:userbook});
-});
-
-router.get("/user-info", (req, res) => {
-  if (!req.session.user) return res.redirect("/admin-login");
-  
- // get employee info
- axios
- .post(url + "/getEmployee")
-   .then((response) => {
-     if (response.data.status["remarks"] === "success") {
-       const book = response.data.payload;
-       userbook = book;
-       console.log('book',book);
-     } else {
-        userbook = sampledata;
-         res.redirect("/home");
-         console.log(error);
-       }
-     }).catch(function (error) {
-       userbook = sampledata;
-     });
-
-
-  res.render("user-info",{employee:userbook});
-});
-
-router.get("/user-logs", (req, res) => {
-  if (!req.session.user) return res.redirect("/admin-login");
-
-
-  // All booking
-  axios
-  .post(url + "/getAllBookings")
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata = slot;
-        console.log('slot available today',slot);
-      } else {
-          sampledata = sampledata;
-          res.redirect("/user-logs");
-          console.log(error);
-        }
-      });
-  
-  res.render("user-logs",{booking: sampledata});
-});
-
-router.get("/settings", (req, res) => {
-  if (!req.session.user) return res.redirect("/admin-login");
-  res.render("settings");
-});
-
-// clerk route=================================================================================
-
-router.get("/clerk-profile", (req, res) => {
-  if (!req.session.user) return res.redirect("/admin-login");
-  console.log(req.session.user);
-  res.render("clerk-profile",{currentUsers: req.session.user});
-});
-
-router.get("/manage-booking-clerk", (req, res) => {
-  if (!req.session.user) return res.redirect("/admin-login");
-  if(!port.isOpen){
-    port.open()
-  }
-  parser.once("data", function (data) {
-    console.log(data)
-    if (data.includes("booking_id")) {
-      axios
-      .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
-      .then((response) => {
-        console.log("detected!", response.data)
-        if(port.isOpen){
-          port.close();
-        }
-        // res.redirect("/manage-booking-clerk");
-      })
-      .catch(function (error) {
-        console.log("not detected!", data)
-        
-        // res.redirect("/manage-booking-clerk");
-      });
-    } 
-  });
-
-
-  // expiration
-  // get user booking info
-  axios
-  .post(url + "/getAllBookings")
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const book = response.data.payload;
-        userbook = book;
+        sampledata = book;
         // console.log('book',book);
               // check user booking
                for(var i = 0; i < book.length; i++){
@@ -479,6 +346,29 @@ router.get("/manage-booking-clerk", (req, res) => {
                   }
                 }
               }
+
+
+              // available today slot
+              axios
+              .post(url + "/getTodayBookings")
+                .then((response) => {
+                  if (response.data.status["remarks"] === "success") {
+                    const slot = response.data.payload;
+                    userbook = slot;
+
+                    // naviigation
+                    res.render("manage-booking",{allbooking:sampledata,slots:userbook});
+                  } else {
+                      // sampledata = sampledata;
+                      res.redirect("/home");
+                      console.log(error);
+                    }
+                  }).catch(function (error) {
+                  });
+
+
+
+
       } else {
          userbook = null;
           res.redirect("/home");
@@ -488,71 +378,218 @@ router.get("/manage-booking-clerk", (req, res) => {
         userbook = null;
       });
 
-  // All booking
-  axios
-  .post(url + "/getAllBookings", sampledata)
-    .then((response) => {
-      if (response.data.status["remarks"] === "success") {
-        const slot = response.data.payload;
-        sampledata = slot;
-        // console.log('slot available today',slot);
-      } else {
-          sampledata = sampledata;
-          res.redirect("/home");
-          console.log(error);
-        }
-      }).catch(function (error) {
-      });
+            });
 
-  // available today slot
-      axios
-      .post(url + "/getTodayBookings", sampledata)
-        .then((response) => {
-          if (response.data.status["remarks"] === "success") {
-            const slot = response.data.payload;
-            userbook = slot;
-            // console.log('slot available today',slot);
-          } else {
-              // sampledata = sampledata;
-              res.redirect("/home");
-              console.log(error);
-            }
-          }).catch(function (error) {
-          });
+// ok
+router.get("/user-info", (req, res) => {
+  if (!req.session.user) return res.redirect("/admin-login");
+  
+ // get employee info
+ axios
+ .post(url + "/getEmployee")
+   .then((response) => {
+     if (response.data.status["remarks"] === "success") {
+       const book = response.data.payload;
+       userbook = book;
+       console.log('book',book);
+     } else {
+        userbook = sampledata;
+         res.redirect("/home");
+         console.log(error);
+       }
 
-      res.render("manage-booking-clerk",{allbooking:sampledata,slots:userbook});
+       res.render("user-info",{employee:userbook});
+
+     }).catch(function (error) {
+       userbook = sampledata;
+     });
+
 
 });
 
-router.get("/manage-parking-clerk", (req, res) => {
+router.get("/user-logs", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
 
 
-  // available today slot
+  // All booking
   axios
-  .post(url + "/getTodayBookings", sampledata)
+  .post(url + "/getAllBookings")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const slot = response.data.payload;
         sampledata = slot;
         console.log('slot available today',slot);
       } else {
-          sampledata = sampledata;
+        sampledata = sampledata;
+        res.redirect("/user-logs");
+        console.log(error);
+      }
+      res.render("user-logs",{booking: sampledata});
+      });
+  
+});
+
+router.get("/settings", (req, res) => {
+  if (!req.session.user) return res.redirect("/admin-login");
+  res.render("settings");
+});
+
+// clerk route=================================================================================
+
+// --ok
+router.get("/clerk-profile", (req, res) => {
+  if (!req.session.user) return res.redirect("/admin-login");
+  console.log(req.session.user);
+  res.render("clerk-profile",{currentUsers: req.session.user});
+});
+
+// --ok
+router.get("/manage-booking-clerk", (req, res) => {
+  
+  
+  
+  if (!req.session.user) return res.redirect("/admin-login");
+
+
+  // ===========================================================================Scanning=============
+  // if(!port.isOpen){
+  //   port.open()
+  // }
+  // parser.once("data", function (data) {
+  //   console.log(data)
+  //   if (data.includes("booking_id")) {
+  //     axios
+  //     .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
+  //     .then((response) => {
+  //       console.log("detected!", response.data)
+  //       if(port.isOpen){
+  //         port.close();
+  //       }
+  //       // res.redirect("/manage-booking-clerk");
+  //     })
+  //     .catch(function (error) {
+  //       console.log("not detected!", data)
+        
+  //       // res.redirect("/manage-booking-clerk");
+  //     });
+  //   } else{
+  //     console.log("not detected!", data)
+
+  //   }
+  // });
+
+
+  // expiration get user booking info
+  axios
+  .post(url + "/getAllBookings")
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        const book = response.data.payload;
+        sampledata = book;
+        // console.log('book',book);
+              // check user booking
+               for(var i = 0; i < book.length; i++){
+
+                //check if the book is either paid or it is stil no expired
+                if(book[i].book_status == 'paid' || book[i].book_status != 'expired')
+                {
+                  var paid_date = new Date(book[i].paid_date);
+                  var date_expiration = new Date(paid_date.getTime() + (60 * 60000));
+                  var now = new Date();
+                  
+                  //update book status if the aloted time overlap to the time givin 
+                  if(now > date_expiration && book[i].date_entry == null)
+                  {
+                    if(book[i].book_status != 'expired' && book[i].paid_date != null){
+                      const data = JSON.stringify({
+                        booking_id: book[i].booking_id,
+                        book_status: 'expired'
+                      });
+
+                      axios
+                      .post(url + "/updateBookingstatus", data)
+                      .then((response) => {
+                            console.log('update to expired success!!!!!!!!!!!!!!!!!');
+                          })
+                          .catch(function (error) {
+                            res.redirect("/user-login");
+                          });
+                      }
+                  }
+                }
+              }
+
+
+              // available today slot
+              axios
+              .post(url + "/getTodayBookings")
+                .then((response) => {
+                  if (response.data.status["remarks"] === "success") {
+                    const slot = response.data.payload;
+                    userbook = slot;
+
+                    // naviigation
+                    res.render("manage-booking-clerk",{allbooking:sampledata,slots:userbook});
+
+                  } else {
+                      // sampledata = sampledata;
+                      res.redirect("/home");
+                      console.log(error);
+                    }
+                  }).catch(function (error) {
+                  });
+
+
+
+
+      } else {
+         userbook = null;
           res.redirect("/home");
           console.log(error);
         }
       }).catch(function (error) {
+        userbook = null;
       });
+
+});
+
+// --ok
+router.get("/manage-parking-clerk", (req, res) => {
+  if (!req.session.user) return res.redirect("/admin-login");
+
+
 
   // get current rates
   axios
-  .post(url + "/getRate", sampledata)
+  .post(url + "/getRate")
     .then((response) => {
       // console.log(response);
       if (response.data.status["remarks"] === "success") {
         const rate = response.data.payload;
         rates = rate;
         console.log('Rate',rates);
+
+                
+          // available today slot
+          axios
+          .post(url + "/getTodayBookings")
+            .then((response) => {
+              if (response.data.status["remarks"] === "success") {
+                const slot = response.data.payload;
+                sampledata = slot;
+                console.log('slot available today',slot);
+
+                res.render("manage-parking-clerk",{parkings:sampledata,rates:rates});
+
+
+              } else {
+                  sampledata = sampledata;
+                  res.redirect("/home");
+                  console.log(error);
+                }
+              }).catch(function (error) {
+              });
+      // end available
       } else {
           res.redirect("/home");
           console.log(error);
@@ -560,7 +597,6 @@ router.get("/manage-parking-clerk", (req, res) => {
       }).catch(function (error) {
       });
 
-  res.render("manage-parking-clerk",{parkings:sampledata,rates:rates});
 });
 
 
