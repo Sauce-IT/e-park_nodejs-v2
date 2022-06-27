@@ -65,7 +65,7 @@ router.get("/home", (req, res) => {
  
   // get current rates
   axios
-      .post(url + "/getRate", sampledata)
+      .post(url + "/getRate")
         .then((response) => {
           // console.log(response);
           if (response.data.status["remarks"] === "success") {
@@ -75,7 +75,7 @@ router.get("/home", (req, res) => {
 
                   // available today slot
                   axios
-                  .post(url + "/getTodayBookings", sampledata)
+                  .post(url + "/getTodayBookings")
                     .then((response) => {
                       if (response.data.status["remarks"] === "success") {
                         const slot = response.data.payload;
@@ -94,6 +94,9 @@ router.get("/home", (req, res) => {
                            if (response.data.status["remarks"] === "success") {
                              const book = response.data.payload;
                              userbook = book;
+
+                            
+
                              console.log('book',book);
                                    // check user booking
                                     for(var i = 0; i < book.length; i++){
@@ -126,36 +129,31 @@ router.get("/home", (req, res) => {
                                        }
                                      }
                                    }
-                     
+                         
                            } else {
                               userbook = null;
-                               res.redirect("/home");
+                            
                                console.log(error);
                              }
-                     
-                     
-                               // navigation
-                               res.render("main",{
-                                 slots:sampledata,
-                                 userbook:userbook,
-                                 rates:rates,
-                                 currentUsers:req.session.user
-                             });
-                     
-                     
+                            // navigation
+                            res.render("main",{slots:sampledata,userbook:userbook,rates:rates,currentUsers:req.session.user});
+                                
                            }).catch(function (error) {
                              userbook = null;
+                          // navigation
+                          res.render("main",{slots:sampledata,userbook:userbook,rates:rates,currentUsers:req.session.user});
+                          
                            });
                      
-                     
+                         
 
-
-                        
-                      } else {
+                        } else {
                           sampledata = sampledata;
                           res.redirect("/home");
                           console.log(error);
                         }
+
+                            
                       }).catch(function (error) {
                       });
 
@@ -167,7 +165,9 @@ router.get("/home", (req, res) => {
             }
           }).catch(function (error) {
           });
- 
+
+    
+
     
     });
 
