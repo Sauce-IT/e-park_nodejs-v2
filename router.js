@@ -1,24 +1,9 @@
 const express = require("express");
-const SerialPort = require("serialport");
 const router = express.Router();
 const axios = require("axios").default;
+
+
 const url = "https://epark-project-api.herokuapp.com";
-
-const parsers = SerialPort.parsers;
-
-const parser = new parsers.Readline({
-  delimiter: "\r\n",
-});
-
-const port = new SerialPort("COM5", {
-  baudRate: 9600,
-  dataBits: 8,
-  parity: "none",
-  stopBits: 1,
-  flowControl: false,
-});
-
-port.pipe(parser);
 
 sampledata = [
   {
@@ -50,8 +35,6 @@ router.get("/", (req, res) => {
         }
       }).catch(function (error) {
       });
-
-  
 });
 
 router.get("/user-login", (req, res) => {
@@ -144,31 +127,19 @@ router.get("/home", (req, res) => {
                           res.render("main",{slots:sampledata,userbook:userbook,rates:rates,currentUsers:req.session.user});
                           
                            });
-                     
-                         
-
                         } else {
                           sampledata = sampledata;
                           res.redirect("/home");
                           console.log(error);
                         }
-
-                            
                       }).catch(function (error) {
                       });
-
-
-
           } else {
               res.redirect("/home");
               console.log(error);
             }
           }).catch(function (error) {
           });
-
-    
-
-    
     });
 
 router.get("/login", (req, res) => {
@@ -237,8 +208,6 @@ router.get("/admin-dashboard", (req, res) => {
 
                             }).catch(function (error) {
                             });
-
-
                 } else {
                     // sampledata = sampledata;
                     res.redirect("/home");
@@ -261,9 +230,6 @@ router.get("/admin-dashboard", (req, res) => {
 // --ok
 router.get("/manage-parking", (req, res) => {
   if (!req.session.user) return res.redirect("/admin-login");
-
-
-  
   // get current rates
   axios
   .post(url + "/getRate", sampledata)
@@ -452,33 +418,6 @@ router.get("/manage-booking-clerk", (req, res) => {
 
 
   // ===========================================================================Scanning=============
-  // if(!port.isOpen){
-  //   port.open()
-  // }
-  // parser.once("data", function (data) {
-  //   console.log(data)
-  //   if (data.includes("booking_id")) {
-  //     axios
-  //     .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
-  //     .then((response) => {
-  //       console.log("detected!", response.data)
-  //       if(port.isOpen){
-  //         port.close();
-  //       }
-  //       // res.redirect("/manage-booking-clerk");
-  //     })
-  //     .catch(function (error) {
-  //       console.log("not detected!", data)
-        
-  //       // res.redirect("/manage-booking-clerk");
-  //     });
-  //   } else{
-  //     console.log("not detected!", data)
-
-  //   }
-  // });
-
-
   // expiration get user booking info
   axios
   .post(url + "/getAllBookings")

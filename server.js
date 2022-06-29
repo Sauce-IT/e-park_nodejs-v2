@@ -5,9 +5,33 @@ const session = require("express-session");
 const { v4: uuidv4 } = require("uuid");
 const router = require("./router");
 const router_api = require("./router-api");
+const SerialPort = require("serialport");
+const axios = require("axios").default;
 
 const app = express();
+
 const port = process.env.PORT || 3000;
+
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const url = "https://epark-project-api.herokuapp.com";
+
+const parsers = SerialPort.parsers;
+
+const parser = new parsers.Readline({
+  delimiter: "\r\n",
+});
+
+const serialport = new SerialPort("COM3", {
+  baudRate: 9600,
+  dataBits: 8,
+  parity: "none",
+  stopBits: 1,
+  flowControl: false,
+});
+
+serialport.pipe(parser);
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,6 +63,38 @@ app.use(
 app.use("/", router);
 app.use("/api", router_api);
 
-app.listen(port, () => {
+io.on('connection', function(socket) {
+  console.log('a user connected');
+  socket.on('data', function(msg){
+    console.log("hello", serialport.isOpen)
+    if(!serialport.isOpen){
+      serialport.open()
+    }
+
+    parser.once("data", function (data) {
+      console.log(data)
+     if (data.includes("booking_id")) {
+        axios
+        .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
+        .then((response) => {
+          console.log("detected!", response.data)
+          if(serialport.isOpen){
+            serialport.close();
+          }
+          io.emit('redirect');
+        })
+        .catch(function (error) {
+          console.log("not detected!", data)
+          io.emit('redirect');
+        });
+      } else{
+        console.log("not detected!", data)
+        io.emit('redirect');
+      } 
+    });
+  });
+});
+
+server.listen(port, () => {
   console.log("listening on port " + port);
 });

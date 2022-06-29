@@ -148,7 +148,7 @@
             <div class="card">
               <div class="card-header">
                 <span><i class="bi bi-table me-2"></i></span> Data Table
-                        <button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal"  data-bs-target="#myModal">Sample Scan</button>
+                        <button type="button" id="open-modal" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal"  data-bs-target="#myModal">Sample Scan</button>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -277,5 +277,22 @@
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap5.min.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+
+      $("#open-modal").click(function(){
+        console.log("Hello")
+        var socket = io();
+
+        socket.emit('data', (data)=>{
+          console.log("hello world berwyn!")
+        })
+
+        socket.on('redirect', (data)=>{
+          window.location.href  = ("/manage-booking-clerk");
+        })
+      });
+    </script>
   </body>
 </html>
