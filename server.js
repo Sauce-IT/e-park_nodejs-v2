@@ -18,21 +18,21 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const url = "https://epark-project-api.herokuapp.com";
 
-const parsers = SerialPort.parsers;
+// const parsers = SerialPort.parsers;
 
-const parser = new parsers.Readline({
-  delimiter: "\r\n",
-});
+// const parser = new parsers.Readline({
+//   delimiter: "\r\n",
+// });
 
-const serialport = new SerialPort("COM3", {
-  baudRate: 9600,
-  dataBits: 8,
-  parity: "none",
-  stopBits: 1,
-  flowControl: false,
-});
+// const serialport = new SerialPort("COM3", {
+//   baudRate: 9600,
+//   dataBits: 8,
+//   parity: "none",
+//   stopBits: 1,
+//   flowControl: false,
+// });
 
-serialport.pipe(parser);
+// serialport.pipe(parser);
 
 
 app.use(bodyParser.json());
@@ -74,32 +74,32 @@ app.use("/api", router_api);
 io.on('connection', function(socket) {
   console.log('a user connected');
   socket.on('data', function(msg){
-    console.log("hello", serialport.isOpen)
-    if(!serialport.isOpen){
-      serialport.open()
-    }
+    // console.log("hello", serialport.isOpen)
+    // if(!serialport.isOpen){
+    //   serialport.open()
+    // }
 
-    parser.once("data", function (data) {
-      console.log(data)
-     if (data.includes("booking_id")) {
-        axios
-        .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
-        .then((response) => {
-          console.log("detected!", response.data)
-          if(serialport.isOpen){
-            serialport.close();
-          }
-          io.emit('redirect');
-        })
-        .catch(function (error) {
-          console.log("not detected!", data)
-          io.emit('redirect');
-        });
-      } else{
-        console.log("not detected!", data)
-        io.emit('redirect');
-      } 
-    });
+    // parser.once("data", function (data) {
+    //   console.log(data)
+    //  if (data.includes("booking_id")) {
+    //     axios
+    //     .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
+    //     .then((response) => {
+    //       console.log("detected!", response.data)
+    //       if(serialport.isOpen){
+    //         serialport.close();
+    //       }
+    //       io.emit('redirect');
+    //     })
+    //     .catch(function (error) {
+    //       console.log("not detected!", data)
+    //       io.emit('redirect');
+    //     });
+    //   } else{
+    //     console.log("not detected!", data)
+    //     io.emit('redirect');
+    //   } 
+    // });
   });
 });
 
