@@ -1,7 +1,9 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
-const session = require("express-session");
+// const session = require("express-session");
+const session = require("cookie-session");
+
 const { v4: uuidv4 } = require("uuid");
 const router = require("./router");
 const router_api = require("./router-api");
@@ -52,11 +54,17 @@ app.set("views", [
   path.join(__dirname, "views/user/"),
 ]);
 
+// app.use(
+//   session({
+//     secret: uuidv4(),
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
 app.use(
   session({
-    secret: uuidv4(),
-    resave: false,
-    saveUninitialized: true,
+    name: "session",
+    keys: [uuidv4()],
   })
 );
 
