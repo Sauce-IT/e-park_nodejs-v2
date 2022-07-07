@@ -14,10 +14,11 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
 const url = "https://epark-project-api.herokuapp.com";
 
+// comment this if you are going to deploy the application
 // const parsers = SerialPort.parsers;
 
 // const parser = new parsers.Readline({
@@ -33,7 +34,7 @@ const url = "https://epark-project-api.herokuapp.com";
 // });
 
 // serialport.pipe(parser);
-
+// end comment here
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -71,35 +72,39 @@ app.use(
 app.use("/", router);
 app.use("/api", router_api);
 
-io.on('connection', function(socket) {
-  console.log('a user connected');
-  socket.on('data', function(msg){
-    // console.log("hello", serialport.isOpen)
-    // if(!serialport.isOpen){
-    //   serialport.open()
+io.on("connection", function (socket) {
+  console.log("a user connected");
+  socket.on("data", function (msg) {
+    // comment out this if you are going to deploy this app
+    // console.log("hello", serialport.isOpen);
+    // if (!serialport.isOpen) {
+    //   serialport.open();
     // }
-
     // parser.once("data", function (data) {
-    //   console.log(data)
-    //  if (data.includes("booking_id")) {
+    //   console.log(data);
+    //   if (data.includes("booking_id")) {
     //     axios
-    //     .post(url +"/scan", JSON.stringify({booking_id: data.split(":")[1]}))
-    //     .then((response) => {
-    //       console.log("detected!", response.data)
-    //       if(serialport.isOpen){
-    //         serialport.close();
-    //       }
-    //       io.emit('redirect');
-    //     })
-    //     .catch(function (error) {
-    //       console.log("not detected!", data)
-    //       io.emit('redirect');
-    //     });
-    //   } else{
-    //     console.log("not detected!", data)
-    //     io.emit('redirect');
-    //   } 
+    //       .post(
+    //         url + "/scan",
+    //         JSON.stringify({ booking_id: data.split(":")[1] })
+    //       )
+    //       .then((response) => {
+    //         console.log("detected!", response.data);
+    //         if (serialport.isOpen) {
+    //           serialport.close();
+    //         }
+    //         io.emit("redirect");
+    //       })
+    //       .catch(function (error) {
+    //         console.log("not detected!", data);
+    //         io.emit("redirect");
+    //       });
+    //   } else {
+    //     console.log("not detected!", data);
+    //     io.emit("redirect");
+    //   }
     // });
+    // end comment here
   });
 });
 
