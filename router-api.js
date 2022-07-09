@@ -45,11 +45,11 @@ router.post("/changt-to-inactive", (req, res) => {
         console.log(response.data);
         res.redirect("/manage-parking");
       } else {
-        res.redirect("/admin-login");
+        res.redirect("/manage-parking");
       }
     })
     .catch(function (error) {
-      res.redirect("/admin-login");
+      res.redirect("/manage-parking");
     });
 });
 
@@ -61,19 +61,21 @@ router.post("/changt-to-active", (req, res) => {
   axios
     .post(url + "/updatePark", loginData)
     .then((response) => {
-      console.log(response);
+      console.log(response, "report!!");
       if (response.data.status["remarks"] === "success") {
         if (req.session.user.position == "admin") {
           res.redirect("/manage-parking");
         } else {
-          res.redirect("/manage-parking-clerk");
+          res.redirect("/manage-parking");
         }
       } else {
-        res.redirect("/admin-login");
+        res.redirect("/manage-parking");
       }
     })
     .catch(function (error) {
-      res.redirect("/admin-login");
+      console.log(error, "report error!!");
+
+      res.redirect("/manage-parking");
     });
 });
 

@@ -258,6 +258,15 @@
                 hidden
               />
             </div>
+
+            <div class="mb-3">
+              <label class="form-label required">Total:</label>
+              <input
+                value="<%= userbook[i].total_price %>"
+                class="form-control"
+                disabled
+              />
+            </div>
             <% if(userbook[i].book_status == 'paid' ) { %> <%
             if(userbook[i].date_entry != null){ %>
             <div class="mb-4">
