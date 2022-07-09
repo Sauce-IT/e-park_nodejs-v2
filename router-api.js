@@ -3,7 +3,6 @@ const router = express.Router();
 const axios = require("axios").default;
 const url = "https://epark-project-api.herokuapp.com";
 
-
 // admin login =============================================================================================
 router.post("/admin-login", (req, res) => {
   const loginData = JSON.stringify({
@@ -18,10 +17,9 @@ router.post("/admin-login", (req, res) => {
         req.session.user = response.data.payload;
         console.log(req.session.user);
 
-        if(response.data.payload['position'] == 'admin')
-        {
+        if (response.data.payload["position"] == "admin") {
           res.redirect("/admin-dashboard");
-        }else{
+        } else {
           res.redirect("/manage-parking-clerk");
         }
       } else {
@@ -38,13 +36,12 @@ router.post("/admin-login", (req, res) => {
 router.post("/changt-to-inactive", (req, res) => {
   const loginData = JSON.stringify({
     slot_id: req.body.slot_id,
-    availability: 'Inactive',
+    availability: "Inactive",
   });
   axios
     .post(url + "/updatePark", loginData)
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
-        
         console.log(response.data);
         res.redirect("/manage-parking");
       } else {
@@ -56,23 +53,21 @@ router.post("/changt-to-inactive", (req, res) => {
     });
 });
 
-
 router.post("/changt-to-active", (req, res) => {
   const loginData = JSON.stringify({
     slot_id: req.body.slot_id,
-    availability: 'Active',
+    availability: "Active",
   });
   axios
     .post(url + "/updatePark", loginData)
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
-        if(req.session.user.position == "admin")
-        {
+        if (req.session.user.position == "admin") {
           res.redirect("/manage-parking");
-        }else{
+        } else {
           res.redirect("/manage-parking-clerk");
-        }  
+        }
       } else {
         res.redirect("/admin-login");
       }
@@ -88,13 +83,11 @@ router.post("/Add-slot", (req, res) => {
     .post(url + "/add-slot")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
-          if(req.session.user.position == "admin")
-          {
-            res.redirect("/manage-parking");
-          }else{
-            res.redirect("/manage-parking-clerk");
-          }
-
+        if (req.session.user.position == "admin") {
+          res.redirect("/manage-parking");
+        } else {
+          res.redirect("/manage-parking-clerk");
+        }
       } else {
         res.redirect("/admin-login");
       }
@@ -103,7 +96,6 @@ router.post("/Add-slot", (req, res) => {
       res.redirect("/admin-login");
     });
 });
-
 
 // add employee/ clerk
 router.post("/add-employee", (req, res) => {
@@ -117,7 +109,7 @@ router.post("/add-employee", (req, res) => {
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
-          res.redirect("/user-info");
+        res.redirect("/user-info");
       } else {
         res.redirect("/admin-login");
       }
@@ -140,7 +132,7 @@ router.post("/edit-employee", (req, res) => {
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
-          res.redirect("/user-info");
+        res.redirect("/user-info");
       } else {
         res.redirect("/admin-login");
       }
@@ -150,39 +142,35 @@ router.post("/edit-employee", (req, res) => {
     });
 });
 
-
 //clerk============================================================================================================
 // scan-booking test
 
 router.post("/scan-booking", (req, res) => {
-
   var booking_id = req.body.booking_id.split(":")[1];
-  
+
   const data = JSON.stringify({
-    booking_id: booking_id
+    booking_id: booking_id,
   });
   console.log(data);
   axios
-    .post(url +"/scan", data)
+    .post(url + "/scan", data)
     .then((response) => {
-        var data = response.data.status["remarks"];
-        console.log(data);
-        res.redirect("/manage-booking-clerk");
+      var data = response.data.status["remarks"];
+      console.log(data);
+      res.redirect("/manage-booking-clerk");
     })
     .catch(function (error) {
       res.redirect("/manage-booking-clerk");
-
     });
 });
 
 // update profile
 router.post("/update-profile-clerk", (req, res) => {
-
   const data = JSON.stringify({
     name: req.body.name,
     email: req.body.email,
-    id:  req.session.user.id,
-    password:  req.body.password
+    id: req.session.user.id,
+    password: req.body.password,
   });
   console.log(data);
   axios
@@ -192,14 +180,12 @@ router.post("/update-profile-clerk", (req, res) => {
         req.session.user = response.data.payload;
         console.log(req.session.user);
         res.redirect("/clerk-profile");
-      } else {        
+      } else {
         res.redirect("/admin-login");
-
       }
     })
     .catch(function (error) {
       res.redirect("/admin-login");
-
     });
 });
 
@@ -207,7 +193,7 @@ router.post("/change-rate", (req, res) => {
   const loginData = JSON.stringify({
     rate_price: req.body.rate,
     rate_type: req.body.type,
-    rate_id: 1
+    rate_id: 1,
   });
 
   axios
@@ -215,24 +201,21 @@ router.post("/change-rate", (req, res) => {
     .then((response) => {
       console.log(response);
       if (response.data.status["remarks"] === "success") {
-        res.redirect("/manage-parking-clerk");
+        res.redirect("/manage-parking");
       } else {
-        res.redirect("/admin-login");
-
+        res.redirect("/manage-parking");
       }
     })
     .catch(function (error) {
-      res.redirect("/admin-login");
-
+      res.redirect("/manage-parking");
     });
 });
 
-
-//paid booking 
+//paid booking
 router.post("/update-paid", (req, res) => {
   const data = JSON.stringify({
     booking_id: req.body.booking_id,
-    book_status: 'paid'
+    book_status: "paid",
   });
 
   axios
@@ -250,11 +233,10 @@ router.post("/update-paid", (req, res) => {
     });
 });
 
-
 // admin log out
 router.post("/admin-logout", (req, res) => {
   const data = JSON.stringify({
-    admin_id: req.session.user.id
+    admin_id: req.session.user.id,
   });
   console.log(data);
 });
@@ -290,7 +272,7 @@ router.post("/register-user", (req, res) => {
     user_name: req.body.user_name,
     user_email: req.body.user_email,
     user_mobile: req.body.user_mobile,
-    user_password: req.body.user_password
+    user_password: req.body.user_password,
   });
 
   axios
@@ -309,56 +291,51 @@ router.post("/register-user", (req, res) => {
     });
 });
 
-//add reservation 
+//add reservation
 router.post("/add-reservation", (req, res) => {
-
-
-  //get current rate 
+  //get current rate
   var rates = 0;
   axios
-  .post(url + "/getRate")
+    .post(url + "/getRate")
     .then((response) => {
       if (response.data.status["remarks"] === "success") {
         const rate = response.data.payload;
-        for(var i = 0; i < rate.length; i++){
-           rates = rate[i].rate_price;
+        for (var i = 0; i < rate.length; i++) {
+          rates = rate[i].rate_price;
           var t = req.body.time;
           var total_price = rates * t;
-
 
           const data = JSON.stringify({
             slot_id: req.body.reserve_slot,
             user_id: req.session.user.id,
             plate: req.body.plate,
             hrs: req.body.time,
-            total_price: total_price
+            total_price: total_price,
           });
-     
-          axios
-            .post(url + "/addReserve", data)
-            .then((response) => {
-              if (response.data.status["remarks"] === "success") {
-                   res.redirect("/home");
-              } else {
-                  res.redirect("/home");
 
-              }
-            });
-           }
-    } else {
-      res.redirect("/home");
-      console.log(error);
-    }
-  }).catch(function (error) {
-    res.redirect("/");
-  });    
+          axios.post(url + "/addReserve", data).then((response) => {
+            if (response.data.status["remarks"] === "success") {
+              res.redirect("/home");
+            } else {
+              res.redirect("/home");
+            }
+          });
+        }
+      } else {
+        res.redirect("/home");
+        console.log(error);
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/");
+    });
 });
 
-//cancel booking 
+//cancel booking
 router.post("/user-cancel-booking", (req, res) => {
   const data = JSON.stringify({
     booking_id: req.body.booking_id,
-    book_status: 'cancel'
+    book_status: "cancel",
   });
 
   axios
@@ -380,17 +357,15 @@ router.post("/user-cancel-booking", (req, res) => {
     });
 });
 
-
 //user profile update
 
 router.post("/update-profile", (req, res) => {
-
   const data = JSON.stringify({
     name: req.body.user_name,
     mobile: req.body.user_mobile,
     email: req.body.user_email,
     password: req.body.user_password,
-    id:  req.session.user.id
+    id: req.session.user.id,
   });
   axios
     .post(url + "/updateProfileuser", data)
