@@ -359,6 +359,31 @@ router.post("/user-cancel-booking", (req, res) => {
     });
 });
 
+router.post("/clerk-cancel-booking", (req, res) => {
+  const data = JSON.stringify({
+    booking_id: req.body.booking_id,
+    book_status: "cancel",
+  });
+
+  axios
+    .post(url + "/updateBookingstatus", data)
+    .then((response) => {
+      if (response.data.status["remarks"] === "success") {
+        // req.session.user = response.data.payload;
+        res.redirect("/manage-booking-clerk");
+      } else {
+        req.session.message = response.data.status["message"];
+        res.redirect("/manage-booking-clerk");
+
+        // res.redirect("/user-login");
+      }
+    })
+    .catch(function (error) {
+      res.redirect("/manage-booking-clerk");
+      console.log(error);
+    });
+});
+
 //user profile update
 
 router.post("/update-profile", (req, res) => {

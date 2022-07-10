@@ -266,28 +266,53 @@
                         <!-- action table -->
                         <td>
                           <% if( allbooking[i].book_status == 'unpaid' ) {%>
-                          <form
-                            class="user-form"
-                            id="login-form"
-                            action="/api/update-paid"
-                            method="post"
-                          >
-                            <input
-                              type="number"
-                              value="<%= allbooking[i].booking_id  %>"
-                              name="booking_id"
-                              id="booking_id"
-                              hidden
-                            />
-                            <button
-                              type="submit"
-                              class="btn btn-primary"
-                              href="javascript:{}"
-                              onclick="document.getElementById('login-form').submit();"
+                          <div class="d-flex gap-1">
+                            <form
+                              class="user-form"
+                              id="login-form"
+                              action="/api/update-paid"
+                              method="post"
                             >
-                              Paid
-                            </button>
-                          </form>
+                              <input
+                                type="number"
+                                value="<%= allbooking[i].booking_id  %>"
+                                name="booking_id"
+                                id="booking_id"
+                                hidden
+                              />
+                              <button
+                                type="submit"
+                                class="btn btn-primary"
+                                href="javascript:{}"
+                                onclick="document.getElementById('login-form').submit();"
+                              >
+                                Paid
+                              </button>
+                            </form>
+                            <form
+                              class="user-form"
+                              id="cancel-booking"
+                              action="/api/clerk-cancel-booking"
+                              method="post"
+                            >
+                              <input
+                                type="number"
+                                value="<%= allbooking[i].booking_id  %>"
+                                name="booking_id"
+                                id="booking_id"
+                                hidden
+                              />
+                              <button
+                                type="submit"
+                                class="btn btn-danger"
+                                href="javascript:{}"
+                                onclick="document.getElementById('cancel-booking').submit();"
+                              >
+                                Cancel
+                              </button>
+                            </form>
+                          </div>
+
                           <% }%>
                         </td>
                       </tr>
