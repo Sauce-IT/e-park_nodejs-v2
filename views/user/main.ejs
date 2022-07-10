@@ -261,11 +261,20 @@
 
             <div class="mb-3">
               <label class="form-label required">Total:</label>
+
+              <% if(rates[0].rate_type !== 'Fixed') {%>
               <input
                 value="<%= userbook[i].total_price %>"
                 class="form-control"
                 disabled
               />
+              <% }else{ %>
+              <input
+                value="<%= rates[0].rate_price %>"
+                class="form-control"
+                disabled
+              />
+              <% } %>
             </div>
             <% if(userbook[i].book_status == 'paid' ) { %> <%
             if(userbook[i].date_entry != null){ %>
