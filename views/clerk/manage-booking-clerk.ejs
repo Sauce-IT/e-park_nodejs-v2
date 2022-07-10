@@ -72,8 +72,7 @@
                   <a class="dropdown-item" href="/clerk-profile">Profile</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="/" >Logout</a>
-                 
+                  <a class="dropdown-item" href="/">Logout</a>
                 </li>
               </ul>
             </li>
@@ -91,8 +90,7 @@
       <div class="offcanvas-body p-0">
         <nav class="navbar-light">
           <ul class="navbar-nav">
-            <li>
-            </li>
+            <li></li>
             <li class="my-4"><hr class="dropdown-divider bg-light" /></li>
             <li>
               <div class="text-muted small fw-bold text-uppercase px-3">
@@ -118,24 +116,22 @@
       </div>
     </div>
 
-<!--testing scan kunware -->
+    <!--testing scan kunware -->
     <div class="modal" id="myModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Test scan and update entry and exit</h5>
-            <button type="button" class="btn-close-white" data-bs-dismiss="modal">x</button>
+            <h5 class="modal-title">Scan and update entry and exit</h5>
+            <button
+              type="button"
+              class="btn-close-white"
+              data-bs-dismiss="modal"
+            >
+              x
+            </button>
           </div>
-          <form id="scan-form" action="/api/scan-booking" method="post">
-              
-            Booking update <input type="text" id="booking_id" name="booking_id" >
 
-                <div class="modal-footer" >
-                  <button  href="javascript:{}" onclick="document.getElementById('scan-form').submit();" class="btn btn-outline-dark btn-md submit-btn"  data-bs-dismiss="modal">Scan</button>
-                  <button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-dismiss="modal">No</button>
-                </div>
-          
-          </form>
+          <h1>Ready to Scan</h1>
         </div>
       </div>
     </div>
@@ -154,7 +150,15 @@
             <div class="card">
               <div class="card-header">
                 <span><i class="bi bi-table me-2"></i></span> Data Table
-                        <button type="button" class="btn btn-outline-dark btn-md submit-btn" data-bs-toggle="modal" data-bs-target="#myModal">Sample Scan</button>
+                <button
+                  type="button"
+                  id="open-modal"
+                  class="btn btn-outline-dark btn-md submit-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#myModal"
+                >
+                  Scan QR Code
+                </button>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -176,86 +180,144 @@
                       </tr>
                     </thead>
                     <tbody>
-								      <% for(var i = 0; i < allbooking.length; i++) {%>
+                      <% for(var i = 0; i < allbooking.length; i++) {%>
                       <!-- <input value="" hidden> -->
-                        <tr>
-                          <td><%= i + 1 %></td>
-                          <td><%= allbooking[i].booking_id %></td>
-                          <td><%= allbooking[i].user_name %></td>
-                          <td><%= allbooking[i].user_mobile %></td>
-                          <td>
-                            <!-- entry table -->
-                              <% if(allbooking[i].book_status == 'paid' && allbooking[i].date_entry == null){ %>
-                                 <p style="color:blue;"> No entry yet</p>
-                              <% }else if(allbooking[i].book_status == 'unpaid'){ %>
-                                 <p style="color:red;">Cannot enter yet</p>
-                              <% }else if(allbooking[i].book_status == 'expired'){ %>
-                                <p style="color:red;">No Entry</p>
-                              <% }else if(allbooking[i].book_status == 'cancel'){ %>
-                                <p style="color:red;">Cannot Enter</p>
-                              <% }else {%>
-                                <%= allbooking[i].date_entry  %>
-                              <% } %>
-                          </td>
-                          <td>
-                            <!-- exit table -->
-                            <% if(allbooking[i].date_exit == null){ %>
-                             
-                                <p style="color:blue;">No exit </p>
-                          
-                            <% }else { %>
-                              <!-- if rate type is hourly and user parking time is sobra mag rered to(naubos na english ko) -->
-                                <% if(allbooking[i].date_exit >= allbooking[i].park_hrs && allbooking[i].date_exit != 0){ %>
-                                  <p style="color:red;"><%= allbooking[i].date_entry %></p>
-                                  <% }else{ %>
-                                    <%= allbooking[i].date_entry %>
-                                  <% }%> 
-                            <% }%>
-                          </td>
-                          <% if(allbooking[i].book_status == 'paid' && allbooking[i].date_entry == null) {%>
-                            <td>
-                            <a href="#" class="btn btn-warning" style="width: 100px;">Reserved</a>
-                            </td>
+                      <tr>
+                        <td><%= i + 1 %></td>
+                        <td><%= allbooking[i].slot_id%></td>
+                        <td><%= allbooking[i].user_name %></td>
+                        <td><%= allbooking[i].user_mobile %></td>
+                        <td>
+                          <!-- entry table -->
+                          <% if(allbooking[i].book_status == 'paid' &&
+                          allbooking[i].date_entry == null){ %>
+                          <p style="color: blue">No entry yet</p>
+                          <% }else if(allbooking[i].book_status == 'unpaid'){ %>
+                          <p style="color: red">Cannot enter yet</p>
+                          <% }else if(allbooking[i].book_status == 'expired'){
+                          %>
+                          <p style="color: red">No Entry</p>
+                          <% }else if(allbooking[i].book_status == 'cancel'){ %>
+                          <p style="color: red">Cannot Enter</p>
+                          <% }else {%> <%= allbooking[i].date_entry %> <% } %>
+                        </td>
+                        <td>
+                          <!-- exit table -->
+                          <% if(allbooking[i].date_exit == null){ %>
+
+                          <p style="color: blue">No exit</p>
+
+                          <% }else { %>
+                          <!-- if rate type is hourly and user parking time is sobra mag rered to(naubos na english ko) -->
+                          <% if(allbooking[i].date_exit >=
+                          allbooking[i].park_hrs && allbooking[i].date_exit !=
+                          0){ %>
+                          <p style="color: red">
+                            <%= allbooking[i].date_entry %>
+                          </p>
+                          <% }else{ %> <%= allbooking[i].date_entry %> <% }%> <%
+                          }%>
+                        </td>
+                        <% if(allbooking[i].book_status == 'paid' &&
+                        allbooking[i].date_entry == null) {%>
+                        <td>
+                          <a
+                            href="#"
+                            class="btn btn-warning"
+                            style="width: 100px"
+                            >Reserved</a
+                          >
+                        </td>
+                        <% }%> <% if( allbooking[i].book_status == 'unpaid') {%>
+                        <td>
+                          <a href="#" class="btn btn-dark" style="width: 100px"
+                            >Unpaid</a
+                          >
+                        </td>
+                        <% }%> <% if( allbooking[i].book_status == 'expired')
+                        {%>
+                        <td>
+                          <a
+                            href="#"
+                            class="btn btn-secondary"
+                            style="width: 100px"
+                            >Expired</a
+                          >
+                        </td>
+                        <% }%> <% if( allbooking[i].book_status == 'cancel') {%>
+                        <td>
+                          <a href="#" class="btn btn-danger">Canceled</a>
+                        </td>
+                        <% }%> <% if( allbooking[i].book_status == 'exited') {%>
+                        <td>
+                          <a
+                            href="#"
+                            class="btn btn-success"
+                            style="width: 100px"
+                            >Done</a
+                          >
+                        </td>
+                        <% }%> <% if( allbooking[i].book_status == 'paid' &&
+                        allbooking[i].date_entry != null ) {%>
+                        <td>
+                          <a href="#" class="btn btn-primary">Occupied</a>
+                        </td>
+                        <% }%>
+                        <!-- action table -->
+                        <td>
+                          <% if( allbooking[i].book_status == 'unpaid' ) {%>
+                          <div class="d-flex gap-1">
+                            <form
+                              class="user-form"
+                              id="login-form"
+                              action="/api/update-paid"
+                              method="post"
+                            >
+                              <input
+                                type="number"
+                                value="<%= allbooking[i].booking_id  %>"
+                                name="booking_id"
+                                id="booking_id"
+                                hidden
+                              />
+                              <button
+                                type="submit"
+                                class="btn btn-primary"
+                                href="javascript:{}"
+                                onclick="document.getElementById('login-form').submit();"
+                              >
+                                Paid
+                              </button>
+                            </form>
+                            <form
+                              class="user-form"
+                              id="cancel-booking"
+                              action="/api/clerk-cancel-booking"
+                              method="post"
+                            >
+                              <input
+                                type="number"
+                                value="<%= allbooking[i].booking_id  %>"
+                                name="booking_id"
+                                id="booking_id"
+                                hidden
+                              />
+                              <button
+                                type="submit"
+                                class="btn btn-danger"
+                                href="javascript:{}"
+                                onclick="document.getElementById('cancel-booking').submit();"
+                              >
+                                Cancel
+                              </button>
+                            </form>
+                          </div>
+
                           <% }%>
-                          <% if( allbooking[i].book_status == 'unpaid') {%>
-                            <td>
-                            <a href="#" class="btn btn-dark" style="width: 100px;">Unpaid</a>
-                            </td>
-                          <% }%>
-                          <% if( allbooking[i].book_status == 'expired') {%>
-                            <td>
-                            <a href="#" class="btn btn-secondary" style="width: 100px;">Expired</a>
-                            </td>
-                          <% }%>
-                          <% if( allbooking[i].book_status == 'cancel') {%>
-                            <td>
-                            <a href="#" class="btn btn-danger">Canceled</a>
-                            </td>
-                          <% }%>
-                          <% if( allbooking[i].book_status == 'exited') {%>
-                            <td>
-                            <a href="#" class="btn btn-success" style="width: 100px;">Done</a>
-                            </td>
-                          <% }%>
-                          <% if( allbooking[i].book_status == 'paid' && allbooking[i].date_entry != null ) {%>
-                            <td>
-                            <a href="#" class="btn btn-primary">Occupied</a>
-                            </td>
-                          <% }%>
-                          <!-- action table -->
-                          <td>
-                            <% if( allbooking[i].book_status == 'unpaid' ) {%>
-                              <form class="user-form" id="login-form" action="/api/update-paid" method="post">
-                                <input type="number" value="<%= allbooking[i].booking_id  %>" name="booking_id" id="booking_id" hidden>
-                                <button type="submit" class="btn btn-primary" href="javascript:{}" onclick="document.getElementById('login-form').submit();">Paid</button>
-                              </form>
-                            <% }%>
-                            
-                          </td>
-                        </tr>
+                        </td>
+                      </tr>
 
                       <% } %>
-
                     </tbody>
                     <tfoot>
                       <tr>
@@ -275,7 +337,6 @@
           </div>
         </div>
       </div>
-   
     </main>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
@@ -283,5 +344,21 @@
     <script src="/js/jquery.dataTables.min.js"></script>
     <script src="/js/dataTables.bootstrap5.min.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      $("#open-modal").click(function () {
+        console.log("Hello");
+        var socket = io();
+
+        socket.emit("data", (data) => {
+          console.log("hello world berwyn!");
+        });
+
+        socket.on("redirect", (data) => {
+          window.location.href = "/manage-booking-clerk";
+        });
+      });
+    </script>
   </body>
 </html>
